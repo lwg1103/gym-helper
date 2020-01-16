@@ -1,8 +1,13 @@
 # gym-helper
+Application will be used as a helper on a gym - will print all necessary information
+during the training.
 
 work in progress!
 
 ## changelog
+
+### 0.1.0
+excercises list
 
 ### 0.0.1
 symfony project init, main screen
