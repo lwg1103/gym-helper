@@ -2,4 +2,25 @@
 {% block title %}Trainings{% endblock %}
 {% block body %}
 <h1>Your trainings:</h1>
+{% for training in trainings %}
+    <h2>{{ training.name }}</h2>
+        <table>
+            <tr>
+                <th>excercise</th>
+                <th>weight</th>
+                <th>repeats</th>
+                <th>break [sec]</th>
+                <th>range</th>
+            </tr>
+            {% for excercise in training.excercises %}
+                    <tr>
+                        <td>{{ excercise.name }}</td>
+                        <td>{{ excercise.weight }}</td>
+                        <td>{{ excercise.repeats }}</td>
+                        <td>{{ excercise.breakTime }}</td>
+                        <td>{{ excercise.min }} - {{ excercise.max }}</td>
+                    </tr>
+            {% endfor %}
+        </table>
+{% endfor %}
 {% endblock %}

@@ -39,7 +39,7 @@ class Excercise
     /**
      * @ORM\Column(type="integer")
      */
-    private $breakeTime;
+    private $breakTime;
 
     /**
      * @ORM\Column(type="integer")
@@ -110,24 +110,24 @@ class Excercise
         return $this;
     }
 
-    public function getBreakeTime(): ?int
+    public function getBreakTime(): ?int
     {
-        return $this->breakeTime;
+        return $this->breakTime;
     }
 
-    public function setBreakeTime(int $breakeTime): self
+    public function setBreakTime(int $breakTime): self
     {
-        $this->breakeTime = $breakeTime;
+        $this->breakTime = $breakTime;
 
         return $this;
     }
 
-    public function getRange(): ?int
+    public function getMin(): ?int
     {
         return $this->min;
     }
 
-    public function setRange(int $range): self
+    public function setMin(int $range): self
     {
         $this->min = $range;
 

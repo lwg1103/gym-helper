@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Training;
 
 class TrainingController extends AbstractController
 {
@@ -12,8 +13,10 @@ class TrainingController extends AbstractController
      */
     public function index()
     {
-        $number = random_int(0, 100);
-
-        return $this->render('training/index.twig');
+        $trainings = $this->getDoctrine()->getRepository(Training::class)->findAll();
+        return $this->render('training/index.twig',
+                [
+                    'trainings' => $trainings
+                ]);
     }
 }
