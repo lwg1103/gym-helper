@@ -14,4 +14,17 @@ class MainControllerTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
+    
+    public function testNavigateToTrainingList()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/');
+        
+        $link = $crawler->filter('a:contains("trainings")')->eq(0)->link();
+        
+        $client->click($link);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
 }
