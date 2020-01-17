@@ -26,6 +26,25 @@ class TrainingControllerTest extends WebTestCase
         $this->assertSelectorTextContains('td', 'exc1');
     }
     
+    /**
+     * bugfix test
+     */
+    public function testSeeTrainingDetils()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/training/');
+        
+        $firstRowFields = $crawler->filter("td");
+        
+        $this->assertEquals("exc1", $firstRowFields->eq(0)->html());
+        $this->assertEquals("30", $firstRowFields->eq(1)->html());
+        $this->assertEquals("12", $firstRowFields->eq(2)->html());
+        $this->assertEquals("3", $firstRowFields->eq(3)->html());
+        $this->assertEquals("60", $firstRowFields->eq(4)->html());
+        $this->assertEquals("10 - 15", $firstRowFields->eq(5)->html());
+    }
+    
     public function testAddTraining()
     {
         $client = static::createClient();
