@@ -10,7 +10,7 @@ class TrainingControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/training');
+        $client->request('GET', '/training/');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }   
@@ -19,19 +19,18 @@ class TrainingControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/training');
+        $crawler = $client->request('GET', '/training/');
         
         $this->assertSelectorTextContains('h1', 'trainings');
         $this->assertSelectorTextContains('h2', 'Monday');
         $this->assertSelectorTextContains('td', 'exc1');
-        
     }
     
     public function testAddTraining()
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/training');
+        $crawler = $client->request('GET', '/training/');
         $this->assertEquals(1, $crawler->filter("h2")->count());
         
         $newTrainingName = "new training name";
@@ -45,5 +44,18 @@ class TrainingControllerTest extends WebTestCase
         
         $this->assertEquals(2, $crawler->filter("h2")->count());
         $this->assertEquals($newTrainingName, $crawler->filter("h2")->eq(1)->html());
+    }
+    
+    public function testDeleteTraining()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/training/');
+        $this->assertEquals(1, $crawler->filter("h2")->count()); 
+        
+        $client->clickLink("delete training");
+        $crawler = $client->followRedirect();
+        
+        $this->assertEquals(0, $crawler->filter("h2")->count()); 
     }
 }

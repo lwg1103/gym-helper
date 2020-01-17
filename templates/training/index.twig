@@ -2,8 +2,12 @@
 {% block title %}Trainings{% endblock %}
 {% block body %}
 <h1>Your trainings:</h1>
+<hr>
 {% for training in trainings %}
-    <h2>{{ training.name }}</h2>
+    <div class="row">
+        <div class="col-md-6"><h2>{{ training.name }}</h2></div>
+        <div class="col-md-6"><a href="{{ path('training_delete', {'id': training.id}) }}">delete training</a></div>
+    </div>
         <table class="table">
             <thead class="thead-dark">
                 <tr>
@@ -25,6 +29,7 @@
             {% endfor %}
         </table>
 {% endfor %}
+<hr>
 <p><a href="{{ path('training_new') }}">add training</a></p>
 <p><a href="{{ path('home') }}">back</a></p>
 {% endblock %}

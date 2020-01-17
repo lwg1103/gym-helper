@@ -8,10 +8,13 @@ use App\Entity\Training;
 use App\Form\TrainingType;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @Route("/training", name="training_")
+ */
 class TrainingController extends AbstractController
 {
     /**
-     * @Route("/training", name="training_index")
+     * @Route("/", name="index")
      */
     public function index()
     {
@@ -23,7 +26,7 @@ class TrainingController extends AbstractController
     }
     
     /**
-     * @Route("/training/new", name="training_new")
+     * @Route("/new", name="new")
      */
     public function new(Request $request)
     {
@@ -45,5 +48,21 @@ class TrainingController extends AbstractController
                 [
                     'form' => $form->createView()
                 ]);
+    }
+    /**
+     * @Route("/{id}/delete", name="delete")
+     */
+    public function delete(int $id)
+    {
+        $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
+        
+        if ($training)
+        {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($training);
+            $entityManager->flush();
+        }
+        
+        return $this->redirectToRoute("training_index");
     }
 }
