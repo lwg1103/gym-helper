@@ -26,4 +26,24 @@ class TrainingControllerTest extends WebTestCase
         $this->assertSelectorTextContains('td', 'exc1');
         
     }
+    
+    public function testAddTraining()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/training');
+        $this->assertEquals(1, $crawler->filter("h2")->count());
+        
+        $newTrainingName = "new training name";
+        
+        $client->clickLink("add training");
+        $client->submitForm("Save",[
+            'training[name]' => $newTrainingName
+        ]);
+        
+        $crawler = $client->followRedirect();
+        
+        $this->assertEquals(2, $crawler->filter("h2")->count());
+        $this->assertEquals($newTrainingName, $crawler->filter("h2")->eq(1)->html());
+    }
 }
