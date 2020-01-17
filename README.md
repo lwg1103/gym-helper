@@ -6,6 +6,9 @@ work in progress!
 
 ## changelog
 
+## 0.2.0
+adding training
+
 ### 0.1.0
 excercises list
 

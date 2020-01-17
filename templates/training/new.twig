@@ -1,0 +1,7 @@
+{% extends "base.twig" %}
+{% block title %}New Training{% endblock %}
+{% block body %}
+    <h1>New Training</h1>
+    {{ form(form) }}
+    <p><a href="{{ path('training_index') }}">back</a></p>
+{% endblock %}
