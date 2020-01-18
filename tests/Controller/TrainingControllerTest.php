@@ -25,27 +25,27 @@ class TrainingControllerTest extends BaseController
     public function testAddTraining()
     {
         $this->onTrainingIndex();
-        $this->seeNTrainingsListed(1);      
+        $this->seeNTrainingsListed(3);      
         $this->clickFirstLinkWithClass(".gh-add-training-button");
         $this->fillTrainingForm("Friday");
-        $this->seeNTrainingsListed(2);
-        $this->trainingNameOnPositionIs("Friday", 1);
+        $this->seeNTrainingsListed(4);
+        $this->trainingNameOnPositionIs("Friday", 3);
     }
     
     public function testDeleteTraining()
     {
         $this->onTrainingIndex();
-        $this->seeNTrainingsListed(1);  
+        $this->seeNTrainingsListed(3);  
         $this->clickFirstLinkWithClass(".gh-delete-training-button");
         $this->followRedirect();
         $this->pageReturnsCode200();
-        $this->seeNTrainingsListed(0);  
+        $this->seeNTrainingsListed(2);  
     }
     
     public function testEditTraining()
     {
         $this->onTrainingIndex();
-        $this->trainingNameOnPositionIs("Monday", 0);
+        $this->trainingNameOnPositionIs("Day 1", 0);
         $this->clickFirstLinkWithClass(".gh-edit-training-button");
         $this->fillTrainingForm("Tuesday");
         $this->pageReturnsCode200();
@@ -64,7 +64,7 @@ class TrainingControllerTest extends BaseController
     private function seeTrainingListDetails()
     {
         $this->assertSelectorTextContains('h1', 'trainings');
-        $this->assertSelectorTextContains('h2.gh-training-name', 'Monday');
+        $this->assertSelectorTextContains('h2.gh-training-name', 'Day 1');
         $this->assertSelectorTextContains('td.gh-excercise-name', 'exc1');
     }
     

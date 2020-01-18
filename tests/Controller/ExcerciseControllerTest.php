@@ -8,21 +8,21 @@ class ExcerciseControllerTest extends BaseController
     public function testAddExcercise()
     {
         $this->onTrainingIndex();
-        $this->seeNExcercisesListed(2);
+        $this->seeNExcercisesListed(6);
         $this->clickFirstLinkWithClass(".gh-add-excercise-button");
         $this->fillExcerciseForm("pull-ups");
-        $this->seeNExcercisesListed(3);
+        $this->seeNExcercisesListed(7);
         $this->excerciseNameOnPositionIs("pull-ups", 2);
     }
 
     public function testDeleteExcercise()
     {
         $this->onTrainingIndex();
-        $this->seeNExcercisesListed(2);
+        $this->seeNExcercisesListed(6);
         $this->clickFirstLinkWithClass(".gh-delete-excercise-button");
         $this->followRedirect();
         $this->pageReturnsCode200();
-        $this->seeNExcercisesListed(1);
+        $this->seeNExcercisesListed(5);
     }
     
     public function testEditExcercise()

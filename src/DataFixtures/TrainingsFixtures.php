@@ -11,7 +11,46 @@ class TrainingsFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        $trainingMon = $this->createTraining("Monday");
+        $this->loadMonday($manager);
+        $this->loadWednesday($manager);
+        $this->loadFriday($manager);
+    }
+    
+    private function loadMonday(ObjectManager $manager)
+    {
+        $trainingMon = $this->createTraining("Day 1");
+        $manager->persist($trainingMon);
+        
+        $excercise1 = $this->createExcercise("exc1", 30, 12);
+        $excercise1->setTraining($trainingMon);
+        $manager->persist($excercise1);
+        
+        $excercise2 = $this->createExcercise("exc2", 45, 10);
+        $excercise2->setTraining($trainingMon);
+        $manager->persist($excercise2);
+
+        $manager->flush();
+    }
+    
+    private function loadWednesday(ObjectManager $manager)
+    {
+        $trainingMon = $this->createTraining("Day 2");
+        $manager->persist($trainingMon);
+        
+        $excercise1 = $this->createExcercise("exc1", 30, 12);
+        $excercise1->setTraining($trainingMon);
+        $manager->persist($excercise1);
+        
+        $excercise2 = $this->createExcercise("exc2", 45, 10);
+        $excercise2->setTraining($trainingMon);
+        $manager->persist($excercise2);
+
+        $manager->flush();
+    }
+    
+    private function loadFriday(ObjectManager $manager)
+    {
+        $trainingMon = $this->createTraining("Day 3");
         $manager->persist($trainingMon);
         
         $excercise1 = $this->createExcercise("exc1", 30, 12);

@@ -33,6 +33,13 @@ class BaseController extends WebTestCase
 
         $this->crawler = $this->client->request('GET', '/training/');
     }
+
+    protected function onTrainingModeIndex()
+    {
+        $this->client = static::createClient();
+
+        $this->crawler = $this->client->request('GET', '/training-mode/');
+    }
     
     protected function clickFirstLinkWithClass($class)
     {
