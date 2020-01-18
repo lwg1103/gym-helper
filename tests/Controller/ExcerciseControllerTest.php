@@ -24,6 +24,16 @@ class ExcerciseControllerTest extends BaseController
         $this->pageReturnsCode200();
         $this->seeNExcercisesListed(1);
     }
+    
+    public function testEditExcercise()
+    {
+        $this->onTrainingIndex();
+        $this->excerciseNameOnPositionIs("exc1", 0);
+        $this->clickFirstLinkWithClass(".gh-edit-excercise-button");
+        $this->fillExcerciseForm("edited exc");
+        $this->pageReturnsCode200();
+        $this->excerciseNameOnPositionIs("edited exc", 0);
+    }
 
     private function fillExcerciseForm($trainingName)
     {
