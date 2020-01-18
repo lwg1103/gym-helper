@@ -2,20 +2,8 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Component\DomCrawler\Crawler;
-
-class ExcerciseControllerTest extends WebTestCase
+class ExcerciseControllerTest extends BaseController
 {
-    /**
-     * @var KernelBrowser 
-     */
-    protected $client;
-    /**
-     * @var Crawler
-     */
-    protected $crawler;
 
     public function testAddExcercise()
     {
@@ -27,11 +15,14 @@ class ExcerciseControllerTest extends WebTestCase
         $this->excerciseNameOnPositionIs("pull-ups", 2);
     }
 
-    private function onTrainingIndex()
+    public function testDeleteExcercise()
     {
-        $this->client = static::createClient();
-
-        $this->crawler = $this->client->request('GET', '/training/');
+        $this->onTrainingIndex();
+        $this->seeNExcercisesListed(2);
+        $this->clickFirstLinkWithClass(".gh-delete-excercise-button");
+        $this->followRedirect();
+        $this->pageReturnsCode200();
+        $this->seeNExcercisesListed(1);
     }
 
     private function fillExcerciseForm($trainingName)
@@ -49,13 +40,6 @@ class ExcerciseControllerTest extends WebTestCase
         $this->crawler = $this->client->followRedirect();
     }
 
-    private function clickFirstLinkWithClass($class)
-    {
-        $this->client->click(
-                $this->crawler->filter($class)->eq(0)->link()
-        );
-    }
-
     private function seeNExcercisesListed(int $n)
     {
         $this->assertEquals($n, $this->crawler->filter("td.gh-excercise-name")
@@ -66,11 +50,6 @@ class ExcerciseControllerTest extends WebTestCase
     {
         $this->assertEquals($name, $this->crawler->filter("td.gh-excercise-name")
                         ->eq($position)->text());
-    }
-
-    private function followRedirect()
-    {
-        $this->crawler = $this->client->followRedirect();
     }
 
 }

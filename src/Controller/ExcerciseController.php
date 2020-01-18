@@ -42,4 +42,21 @@ class ExcerciseController extends AbstractController
         );
     }
 
+    /**
+     * @Route("/{id}/delete", name="delete")
+     */
+    public function delete(int $id)
+    {
+        $excercise = $this->getDoctrine()->getRepository(Excercise::class)->find($id);
+
+        if ($excercise)
+        {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($excercise);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute("training_index");
+    }
+
 }
