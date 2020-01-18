@@ -2,54 +2,40 @@
 
 namespace App\Controller;
 
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Entity\Training;
-use App\Form\TrainingType;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use App\Entity\Excercise;
+use App\Form\ExcerciseType;
 
 /**
- * @Route("/training", name="training_")
+ * @Route("/excercise", name="excercise_")
  */
-class TrainingController extends AbstractController
+class ExcerciseController extends AbstractController
 {
-
-    /**
-     * @Route("/", name="index")
-     */
-    public function index()
-    {
-        $trainings = $this->getDoctrine()->getRepository(Training::class)->findAll();
-        return $this->render(
-                        'training/index.twig',
-                        [
-                            'trainings' => $trainings
-                        ]
-        );
-    }
 
     /**
      * @Route("/new", name="new")
      */
     public function new(Request $request)
     {
-        $training = new Training();
-        $form     = $this->createForm(TrainingType::class, $training);
+        $excercise = new Excercise();
+        $form      = $this->createForm(ExcerciseType::class, $excercise);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid())
         {
-            $training = $form->getData();
+            $excercise = $form->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($training);
+            $entityManager->persist($excercise);
             $entityManager->flush();
 
             return $this->redirectToRoute('training_index');
         }
 
         return $this->render(
-                        'training/new_edit.twig',
+                        'excercise/new_edit.twig',
                         [
                             'form' => $form->createView()
                         ]
@@ -61,12 +47,12 @@ class TrainingController extends AbstractController
      */
     public function delete(int $id)
     {
-        $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
+        $excercise = $this->getDoctrine()->getRepository(Excercise::class)->find($id);
 
-        if ($training)
+        if ($excercise)
         {
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($training);
+            $entityManager->remove($excercise);
             $entityManager->flush();
         }
 
@@ -78,26 +64,26 @@ class TrainingController extends AbstractController
      */
     public function edit(Request $request, int $id)
     {
-        $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
+        $excercise = $this->getDoctrine()->getRepository(Excercise::class)->find($id);
 
-        if ($training)
+        if ($excercise)
         {
-            $form = $this->createForm(TrainingType::class, $training);
+            $form = $this->createForm(ExcerciseType::class, $excercise);
 
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid())
             {
-                $training = $form->getData();
+                $excercise = $form->getData();
 
                 $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($training);
+                $entityManager->persist($excercise);
                 $entityManager->flush();
 
                 return $this->redirectToRoute('training_index');
             }
 
             return $this->render(
-                            'training/new_edit.twig',
+                            'excercise/new_edit.twig',
                             [
                                 'form' => $form->createView()
                             ]

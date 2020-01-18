@@ -28,6 +28,7 @@
                     <th>series</th>
                     <th>break [sec]</th>
                     <th>range</th>
+                    <th>action</th>
                 </tr>
             </thead>
             {% for excercise in training.excercises %}
@@ -38,11 +39,22 @@
                     <td>{{ excercise.series }}</td>
                     <td>{{ excercise.breakTime }}</td>
                     <td>{{ excercise.min }} - {{ excercise.max }}</td>
+                    <td>
+                        <a class="gh-edit-excercise-button btn btn-primary" href="{{ path('excercise_edit', {'id': excercise.id}) }}">
+                            Edit
+                        </a>
+                        <a class="gh-delete-excercise-button btn btn-danger" href="{{ path('excercise_delete', {'id': excercise.id}) }}">
+                            Delete
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>
     {% endfor %}
     <hr>
-    <p><a class="gh-add-training-button" href="{{ path('training_new') }}">add training</a></p>
-    <p><a href="{{ path('home') }}">back</a></p>
+    <div class="row">
+        <div class="col-md-4"><a class="gh-add-training-button btn btn-success" href="{{ path('training_new') }}">Add Training</a></div>
+        <div class="col-md-4"><a class="gh-add-excercise-button btn btn-success" href="{{ path('excercise_new') }}">Add Excercise</a></div>
+        <div class="col-md-4"><a class="btn btn-secondary" href="{{ path('home') }}">Back</a></div>
+    </div>
 {% endblock %}

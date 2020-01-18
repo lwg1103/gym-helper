@@ -2,21 +2,8 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Component\DomCrawler\Crawler;
-
-class TrainingControllerTest extends WebTestCase
+class TrainingControllerTest extends BaseController
 {
-    /**
-     * @var KernelBrowser 
-     */
-    protected $client;
-    /**
-     * @var Crawler
-     */
-    protected $crawler;
-    
     public function testSeeTrainingPage()
     {
         $this->onTrainingIndex();
@@ -65,18 +52,6 @@ class TrainingControllerTest extends WebTestCase
         $this->trainingNameOnPositionIs("Tuesday", 0);
     }
     
-    private function onTrainingIndex()
-    {
-        $this->client = static::createClient();
-
-        $this->crawler = $this->client->request('GET', '/training/');
-    }
-    
-    private function pageReturnsCode200()
-    {
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-    }
-    
     private function fillTrainingForm($trainingName)
     {
         $this->client->submitForm("Save",[
@@ -84,13 +59,6 @@ class TrainingControllerTest extends WebTestCase
         ]);
         
         $this->crawler = $this->client->followRedirect();
-    }
-    
-    private function clickFirstLinkWithClass($class)
-    {
-        $this->client->click(
-            $this->crawler->filter($class)->eq(0)->link()
-        );
     }
     
     private function seeTrainingListDetails()
@@ -122,10 +90,5 @@ class TrainingControllerTest extends WebTestCase
     {
         $this->assertEquals($name, $this->crawler->filter("h2.gh-training-name")
                 ->eq($position)->text());
-    }
-    
-    private function followRedirect()
-    {
-        $this->crawler = $this->client->followRedirect();
     }
 }
