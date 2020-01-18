@@ -44,7 +44,7 @@ class TrainingController extends AbstractController
             return $this->redirectToRoute('training_index');
         }
         
-        return $this->render('training/new.twig',
+        return $this->render('training/new_edit.twig',
                 [
                     'form' => $form->createView()
                 ]);
@@ -64,5 +64,38 @@ class TrainingController extends AbstractController
         }
         
         return $this->redirectToRoute("training_index");
+    }
+    
+    /**
+     * @Route("/{id}/edit", name="edit")
+     */
+    public function edit(Request $request, int $id)
+    {
+        $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
+        
+        if ($training)
+        {
+            $form = $this->createForm(TrainingType::class, $training);
+
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $training = $form->getData();
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($training);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('training_index');
+            }
+
+            return $this->render('training/new_edit.twig',
+                    [
+                        'form' => $form->createView()
+                    ]);
+        }
+        else
+        {
+            return $this->redirectToRoute("training_index"); 
+        }
     }
 }
