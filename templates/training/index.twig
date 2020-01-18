@@ -43,6 +43,9 @@
         </table>
     {% endfor %}
     <hr>
-    <p><a class="gh-add-training-button" href="{{ path('training_new') }}">add training</a></p>
-    <p><a href="{{ path('home') }}">back</a></p>
+    <div class="row">
+        <div class="col-md-4"><a class="gh-add-training-button btn btn-success" href="{{ path('training_new') }}">Add Training</a></div>
+        <div class="col-md-4"><a class="gh-add-excercise-button btn btn-success" href="{{ path('excercise_new') }}">Add Excercise</a></div>
+        <div class="col-md-4"><a class="btn btn-secondary" href="{{ path('home') }}">Back</a></div>
+    </div>
 {% endblock %}

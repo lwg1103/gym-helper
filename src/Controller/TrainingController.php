@@ -13,28 +13,32 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class TrainingController extends AbstractController
 {
+
     /**
      * @Route("/", name="index")
      */
     public function index()
     {
         $trainings = $this->getDoctrine()->getRepository(Training::class)->findAll();
-        return $this->render('training/index.twig',
-                [
-                    'trainings' => $trainings
-                ]);
+        return $this->render(
+                        'training/index.twig',
+                        [
+                            'trainings' => $trainings
+                        ]
+        );
     }
-    
+
     /**
      * @Route("/new", name="new")
      */
     public function new(Request $request)
     {
         $training = new Training();
-        $form = $this->createForm(TrainingType::class, $training);
-        
+        $form     = $this->createForm(TrainingType::class, $training);
+
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid())
+        {
             $training = $form->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -43,42 +47,46 @@ class TrainingController extends AbstractController
 
             return $this->redirectToRoute('training_index');
         }
-        
-        return $this->render('training/new_edit.twig',
-                [
-                    'form' => $form->createView()
-                ]);
+
+        return $this->render(
+                        'training/new_edit.twig',
+                        [
+                            'form' => $form->createView()
+                        ]
+        );
     }
+
     /**
      * @Route("/{id}/delete", name="delete")
      */
     public function delete(int $id)
     {
         $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
-        
+
         if ($training)
         {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($training);
             $entityManager->flush();
         }
-        
+
         return $this->redirectToRoute("training_index");
     }
-    
+
     /**
      * @Route("/{id}/edit", name="edit")
      */
     public function edit(Request $request, int $id)
     {
         $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
-        
+
         if ($training)
         {
             $form = $this->createForm(TrainingType::class, $training);
 
             $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid())
+            {
                 $training = $form->getData();
 
                 $entityManager = $this->getDoctrine()->getManager();
@@ -88,14 +96,17 @@ class TrainingController extends AbstractController
                 return $this->redirectToRoute('training_index');
             }
 
-            return $this->render('training/new_edit.twig',
-                    [
-                        'form' => $form->createView()
-                    ]);
+            return $this->render(
+                            'training/new_edit.twig',
+                            [
+                                'form' => $form->createView()
+                            ]
+            );
         }
         else
         {
-            return $this->redirectToRoute("training_index"); 
+            return $this->redirectToRoute("training_index");
         }
     }
+
 }
