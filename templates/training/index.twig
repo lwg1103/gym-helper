@@ -1,13 +1,24 @@
 {% extends "base.twig" %}
 {% block title %}Trainings{% endblock %}
 {% block body %}
-<h1>Your trainings:</h1>
-<hr>
-{% for training in trainings %}
-    <div class="row">
-        <div class="col-md-6"><h2>{{ training.name }}</h2></div>
-        <div class="col-md-6"><a href="{{ path('training_delete', {'id': training.id}) }}">delete training</a></div>
-    </div>
+    <h1>Your trainings:</h1>
+    <hr>
+    {% for training in trainings %}
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="gh-training-name">{{ training.name }}</h2>
+            </div>        
+            <div class="col-md-3">
+                <a class="gh-edit-training-button btn btn-primary" href="{{ path('training_edit', {'id': training.id}) }}">
+                    Edit
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a class="gh-delete-training-button btn btn-danger" href="{{ path('training_delete', {'id': training.id}) }}">
+                    Delete
+                </a>
+            </div>
+        </div>
         <table class="table">
             <thead class="thead-dark">
                 <tr>
@@ -20,18 +31,18 @@
                 </tr>
             </thead>
             {% for excercise in training.excercises %}
-                    <tr>
-                        <td>{{ excercise.name }}</td>
-                        <td>{{ excercise.weight }}</td>
-                        <td>{{ excercise.repeats }}</td>
-                        <td>{{ excercise.series }}</td>
-                        <td>{{ excercise.breakTime }}</td>
-                        <td>{{ excercise.min }} - {{ excercise.max }}</td>
-                    </tr>
+                <tr>
+                    <td class="gh-excercise-name">{{ excercise.name }}</td>
+                    <td>{{ excercise.weight }}</td>
+                    <td>{{ excercise.repeats }}</td>
+                    <td>{{ excercise.series }}</td>
+                    <td>{{ excercise.breakTime }}</td>
+                    <td>{{ excercise.min }} - {{ excercise.max }}</td>
+                </tr>
             {% endfor %}
         </table>
-{% endfor %}
-<hr>
-<p><a href="{{ path('training_new') }}">add training</a></p>
-<p><a href="{{ path('home') }}">back</a></p>
+    {% endfor %}
+    <hr>
+    <p><a class="gh-add-training-button" href="{{ path('training_new') }}">add training</a></p>
+    <p><a href="{{ path('home') }}">back</a></p>
 {% endblock %}

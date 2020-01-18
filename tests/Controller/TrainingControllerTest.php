@@ -3,39 +3,106 @@
 namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\DomCrawler\Crawler;
 
 class TrainingControllerTest extends WebTestCase
 {
+    /**
+     * @var KernelBrowser 
+     */
+    protected $client;
+    /**
+     * @var Crawler
+     */
+    protected $crawler;
+    
     public function testSeeTrainingPage()
     {
-        $client = static::createClient();
-
-        $client->request('GET', '/training/');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->onTrainingIndex();
+        $this->pageReturnsCode200();
     }   
     
     public function testSeeTrainigsList()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/training/');
-        
-        $this->assertSelectorTextContains('h1', 'trainings');
-        $this->assertSelectorTextContains('h2', 'Monday');
-        $this->assertSelectorTextContains('td', 'exc1');
+        $this->onTrainingIndex();
+        $this->seeTrainingListDetails();
     }
     
-    /**
-     * bugfix test
-     */
-    public function testSeeTrainingDetils()
+    public function testSeeExcerciseDetails()
     {
-        $client = static::createClient();
+        $this->onTrainingIndex();
+        $this->seeExcerciseDetails();
+    }
+    
+    public function testAddTraining()
+    {
+        $this->onTrainingIndex();
+        $this->seeNTrainingsListed(1);      
+        $this->clickFirstLinkWithClass(".gh-add-training-button");
+        $this->fillTrainingForm("Friday");
+        $this->seeNTrainingsListed(2);
+        $this->trainingNameOnPositionIs("Friday", 1);
+    }
+    
+    public function testDeleteTraining()
+    {
+        $this->onTrainingIndex();
+        $this->seeNTrainingsListed(1);  
+        $this->clickFirstLinkWithClass(".gh-delete-training-button");
+        $this->followRedirect();
+        $this->pageReturnsCode200();
+        $this->seeNTrainingsListed(0);  
+    }
+    
+    public function testEditTraining()
+    {
+        $this->onTrainingIndex();
+        $this->trainingNameOnPositionIs("Monday", 0);
+        $this->clickFirstLinkWithClass(".gh-edit-training-button");
+        $this->fillTrainingForm("Tuesday");
+        $this->pageReturnsCode200();
+        $this->trainingNameOnPositionIs("Tuesday", 0);
+    }
+    
+    private function onTrainingIndex()
+    {
+        $this->client = static::createClient();
 
-        $crawler = $client->request('GET', '/training/');
+        $this->crawler = $this->client->request('GET', '/training/');
+    }
+    
+    private function pageReturnsCode200()
+    {
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+    }
+    
+    private function fillTrainingForm($trainingName)
+    {
+        $this->client->submitForm("Save",[
+            'training[name]' => $trainingName
+        ]);
         
-        $firstRowFields = $crawler->filter("td");
+        $this->crawler = $this->client->followRedirect();
+    }
+    
+    private function clickFirstLinkWithClass($class)
+    {
+        $this->client->click(
+            $this->crawler->filter($class)->eq(0)->link()
+        );
+    }
+    
+    private function seeTrainingListDetails()
+    {
+        $this->assertSelectorTextContains('h1', 'trainings');
+        $this->assertSelectorTextContains('h2.gh-training-name', 'Monday');
+        $this->assertSelectorTextContains('td.gh-excercise-name', 'exc1');
+    }
+    
+    private function seeExcerciseDetails()
+    {
+        $firstRowFields = $this->crawler->filter("td");
         
         $this->assertEquals("exc1", $firstRowFields->eq(0)->html());
         $this->assertEquals("30", $firstRowFields->eq(1)->html());
@@ -45,36 +112,20 @@ class TrainingControllerTest extends WebTestCase
         $this->assertEquals("10 - 15", $firstRowFields->eq(5)->html());
     }
     
-    public function testAddTraining()
+    private function seeNTrainingsListed(int $n)
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/training/');
-        $this->assertEquals(1, $crawler->filter("h2")->count());
-        
-        $newTrainingName = "new training name";
-        
-        $client->clickLink("add training");
-        $client->submitForm("Save",[
-            'training[name]' => $newTrainingName
-        ]);
-        
-        $crawler = $client->followRedirect();
-        
-        $this->assertEquals(2, $crawler->filter("h2")->count());
-        $this->assertEquals($newTrainingName, $crawler->filter("h2")->eq(1)->html());
+        $this->assertEquals($n, $this->crawler->filter("h2.gh-training-name")
+                ->count());
     }
     
-    public function testDeleteTraining()
+    private function trainingNameOnPositionIs(string $name, int $position)
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/training/');
-        $this->assertEquals(1, $crawler->filter("h2")->count()); 
-        
-        $client->clickLink("delete training");
-        $crawler = $client->followRedirect();
-        
-        $this->assertEquals(0, $crawler->filter("h2")->count()); 
+        $this->assertEquals($name, $this->crawler->filter("h2.gh-training-name")
+                ->eq($position)->text());
+    }
+    
+    private function followRedirect()
+    {
+        $this->crawler = $this->client->followRedirect();
     }
 }
