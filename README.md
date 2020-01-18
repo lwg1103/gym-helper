@@ -5,6 +5,8 @@ during the training.
 work in progress!
 
 ## changelog
+### 0.4.0
+editing training
 ### 0.3.0
 deleting training
 ### 0.2.0
