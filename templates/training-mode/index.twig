@@ -1,0 +1,20 @@
+{% extends "base.twig" %}
+{% block title %}Training Mode{% endblock %}
+{% block body %}
+    <h1>Select new training to start</h1>
+    <hr>
+    {% for training in trainings %}
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="gh-training-name">{{ training.name }}</h2>
+            </div>
+            <div class="col-md-6">
+                <div><a class="gh-start-training-button btn btn-primary" href="{{ path('training_mode_show', {"id": training.id}) }}">Start</a></div>
+            </div>
+        </div>
+    {% endfor %}
+    <hr>
+    <div class="row">
+        <div class="col-md-4"><a class="btn btn-secondary" href="{{ path('home') }}">Back</a></div>
+    </div>
+{% endblock %}

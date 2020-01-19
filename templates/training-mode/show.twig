@@ -1,0 +1,26 @@
+{% extends 'base.twig' %}
+{% block title %}{{ training.name }}{%  endblock %}
+{% block body %}
+    <h1 class="gh-training-name">{{ training.name }}</h1>
+    <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>excercise</th>
+                    <th>weight</th>
+                    <th>repeats</th>
+                    <th>series</th>
+                    <th>break [sec]</th>
+                </tr>
+            </thead>
+            {% for excercise in training.excercises %}
+                <tr>
+                    <td class="gh-excercise-name">{{ excercise.name }}</td>
+                    <td>{{ excercise.weight }}</td>
+                    <td>{{ excercise.repeats }}</td>
+                    <td>{{ excercise.series }}</td>
+                    <td>{{ excercise.breakTime }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+            <div class="col-md-4"><a class="btn btn-secondary" href="{{ path('training_mode_index') }}">Back</a></div>
+{% endblock %}
