@@ -43,7 +43,7 @@ class BaseController extends WebTestCase
     
     protected function clickFirstLinkWithClass($class)
     {
-        $this->client->click(
+        $this->crawler = $this->client->click(
             $this->crawler->filter($class)->eq(0)->link()
         );
     }
