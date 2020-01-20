@@ -28,6 +28,11 @@ class Training
      */
     private $excercises;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\TrainingInstance", mappedBy="baseTraining", cascade={"persist", "remove"})
+     */
+    private $trainingInstance;
+
     public function __construct()
     {
         $this->excercises = new ArrayCollection();
@@ -84,6 +89,24 @@ class Training
     public function __toString()
     {
         return $this->name;
+    }
+
+    public function getTrainingInstance(): ?TrainingInstance
+    {
+        return $this->trainingInstance;
+    }
+
+    public function setTrainingInstance(?TrainingInstance $trainingInstance): self
+    {
+        $this->trainingInstance = $trainingInstance;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newBaseTraining = null === $trainingInstance ? null : $this;
+        if ($trainingInstance->getBaseTraining() !== $newBaseTraining) {
+            $trainingInstance->setBaseTraining($newBaseTraining);
+        }
+
+        return $this;
     }
 
 }

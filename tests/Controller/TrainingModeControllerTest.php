@@ -21,7 +21,7 @@ class TrainingModeControllerTest extends BaseController
     {
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
-        $this->pageReturnsCode200();
+        $this->followRedirect();
         $this->seeExcerciseList();
     }
 
@@ -41,9 +41,13 @@ class TrainingModeControllerTest extends BaseController
     private function seeExcerciseList()
     {
         $this->assertEquals("Day 1", $this->crawler->filter(".gh-training-name")->eq(0)->html());
-        $this->assertEquals(2, $this->crawler->filter(".gh-excercise-name")->count());
+        $this->assertEquals(6, $this->crawler->filter(".gh-excercise-name")->count());
         $this->assertEquals("exc1", $this->crawler->filter(".gh-excercise-name")->eq(0)->html());
-        $this->assertEquals("exc2", $this->crawler->filter(".gh-excercise-name")->eq(1)->html());
+        $this->assertEquals("exc1", $this->crawler->filter(".gh-excercise-name")->eq(1)->html());
+        $this->assertEquals("exc1", $this->crawler->filter(".gh-excercise-name")->eq(2)->html());
+        $this->assertEquals("exc2", $this->crawler->filter(".gh-excercise-name")->eq(3)->html());
+        $this->assertEquals("exc2", $this->crawler->filter(".gh-excercise-name")->eq(4)->html());
+        $this->assertEquals("exc2", $this->crawler->filter(".gh-excercise-name")->eq(5)->html());
     }
 
 }
