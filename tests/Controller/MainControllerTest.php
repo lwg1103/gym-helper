@@ -21,10 +21,25 @@ class MainControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/');
         
-        $link = $crawler->filter('a:contains("trainings")')->eq(0)->link();
+        $link = $crawler->filter('a:contains("customize trainings")')->eq(0)->link();
         
         $client->click($link);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains("/training/", $client->getHistory()->current()->getUri());
+    }
+    
+    public function testNavigateToTrainingMode()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/');
+        
+        $link = $crawler->filter('a:contains("training mode")')->eq(0)->link();
+        
+        $client->click($link);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode()); 
+        $this->assertContains("/training-mode/", $client->getHistory()->current()->getUri());
     }
 }

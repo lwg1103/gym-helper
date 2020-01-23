@@ -1,0 +1,35 @@
+{% extends 'base.twig' %}
+{% block title %}{{ training.name }}{%  endblock %}
+{% block body %}
+    <h1 class="gh-training-name">{{ training.name }}</h1>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>excercise</th>
+                <th>weight</th>
+                <th>repeats</th>
+                <th>break [sec]</th>
+                <th>action</th>
+            </tr>
+        </thead>
+        {% for excercise in training.excercises %}
+            {% if excercise.result == 0 %}
+                <tr>
+                    <td class="gh-excercise-name">{{ excercise.name }}</td>
+                    <td>{{ excercise.weight }}</td>
+                    <td>{{ excercise.repeats }}</td>
+                    <td>{{ excercise.breakTime }}</td>
+                    <td>
+                        <a 
+                            class="gh-excercise-done btn btn-success" 
+                            href="{{ path('training_mode_done_excercise', {"id": excercise.id}) }}"
+                            >
+                            Done
+                        </a>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    <div class="col-md-4"><a class="btn btn-secondary" href="{{ path('training_mode_index') }}">Back</a></div>
+{% endblock %}
