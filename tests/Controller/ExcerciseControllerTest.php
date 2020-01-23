@@ -34,6 +34,12 @@ class ExcerciseControllerTest extends BaseController
         $this->pageReturnsCode200();
         $this->excerciseNameOnPositionIs("edited exc", 0);
     }
+    
+    public function testThrows404IfEditedExcerciseDoesNotExists()
+    {
+        $this->getPageWithUrl("/excercise/99999/edit");
+        $this->pageReturnsNotFoundCode();
+    }
 
     private function fillExcerciseForm($trainingName)
     {
@@ -52,8 +58,7 @@ class ExcerciseControllerTest extends BaseController
 
     private function seeNExcercisesListed(int $n)
     {
-        $this->assertEquals($n, $this->crawler->filter("td.gh-excercise-name")
-                        ->count());
+        $this->assertCountElementsByClass($n, "td.gh-excercise-name");
     }
 
     private function excerciseNameOnPositionIs(string $name, int $position)
