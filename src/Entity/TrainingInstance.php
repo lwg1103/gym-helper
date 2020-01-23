@@ -19,12 +19,12 @@ class TrainingInstance
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Training", inversedBy="trainingInstance", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Training", inversedBy="trainingInstance")
      */
     private $baseTraining;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ExcerciseInstance", mappedBy="trainingInstance", orphanRemoval=true, cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="App\Entity\ExcerciseInstance", mappedBy="trainingInstance", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private $excercises;
 

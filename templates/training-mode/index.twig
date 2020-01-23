@@ -11,7 +11,7 @@
             <div class="col-md-6 row">
                 {% if training.trainingInstance %}                    
                     <div class="col-md-6"><a class="gh-continue-training-button btn btn-warning" href="{{ path('training_mode_show', {"id": training.trainingInstance.id}) }}">Continue</a></div>
-                    <div class="col-md-6"><a class="gh-restart-training-button btn btn-danger" href="">Restart</a></div>
+                    <div class="col-md-6"><a class="gh-restart-training-button btn btn-danger" href="{{ path('training_mode_restart', {"id": training.trainingInstance.id}) }}">Restart</a></div>
                 {% else %}
                     <div class="col-md-12"><a class="gh-start-training-button btn btn-success" href="{{ path('training_mode_start', {"id": training.id}) }}">Start</a></div>
                 {% endif %}

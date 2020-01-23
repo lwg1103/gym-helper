@@ -65,17 +65,34 @@ class TrainingModeController extends AbstractController
             return $this->redirectToRoute("training_mode_show", ['id' => $training->getTrainingInstance()->getId()]);
         }
         
-        $trainingInstance = $generator->generate($training);
-        
-        $this->getDoctrine()->getManager()->persist($trainingInstance);
-        $this->getDoctrine()->getManager()->flush();
+        $trainingInstance = $this->generateTrainingInstance($generator, $training);
 
         return $this->redirectToRoute("training_mode_show", ['id' => $trainingInstance->getId()]);
+    }
+
+    /**
+     * @Route("/{id}/restart", name="restart")
+     */
+    public function restart(int $id, TrainingInstanceGenerator $generator)
+    {
+        $trainingInstance = $this->getTrainingInstance($id);
+        
+        if (!$trainingInstance)
+        {
+            throw $this->createNotFoundException('The excercise does not exist');
+        }
+        
+        $this->getDoctrine()->getManager()->remove($trainingInstance);
+        $this->getDoctrine()->getManager()->flush();
+     
+        $newTrainingInstance = $this->generateTrainingInstance($generator, $trainingInstance->getBaseTraining());
+
+        return $this->redirectToRoute("training_mode_show", ['id' => $newTrainingInstance->getId()]);
     }
     
     /**
      * 
-     * @Route("/{id}/done", name="done")
+     * @Route("/excercise/{id}/done", name="done_excercise")
      */
     public function done(int $id)
     {
@@ -105,6 +122,16 @@ class TrainingModeController extends AbstractController
     private function getExcerciseInstance($id)
     {
         return $this->getDoctrine()->getRepository(ExcerciseInstance::class)->find($id);
+    }
+    
+    private function generateTrainingInstance($generator, $training)
+    {
+        $trainingInstance = $generator->generate($training);
+        
+        $this->getDoctrine()->getManager()->persist($trainingInstance);
+        $this->getDoctrine()->getManager()->flush();
+        
+        return $trainingInstance;
     }
 
 }

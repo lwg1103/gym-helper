@@ -51,6 +51,30 @@ class TrainingModeControllerTest extends BaseController
         $this->pageReturnsNotFoundCode();
     }
 
+    public function testThrows404IfRestartedTrainingDoesNotExists()
+    {
+        $this->restartTrainingWithId("99999");
+        $this->pageReturnsNotFoundCode();
+    }
+    
+    public function testRestartButtonCreatesNewTrainingSoISeeDoneExcercisesAgain()
+    {
+        //start training and mark one excercise as done
+        $this->onTrainingModeIndex();
+        $this->enterFirstTraining();
+        $this->followRedirect();
+        $this->seeNExcercises(6);
+        $this->marFirstExcerciseAsDone();
+        $this->followRedirect();
+        $this->seeNExcercises(6 - 1);
+        
+        //restart training
+        $this->onTrainingModeIndex();
+        $this->restartFirstTraining();
+        $this->followRedirect();
+        $this->seeNExcercises(6);
+    }
+
     private function seeAllTrainingsOnList()
     {
         $this->assertCountElementsByClass(3, "h2.gh-training-name");
@@ -62,6 +86,11 @@ class TrainingModeControllerTest extends BaseController
     private function enterFirstTraining()
     {
         $this->clickFirstLinkWithClass(".gh-start-training-button");
+    }
+
+    private function restartFirstTraining()
+    {
+        $this->clickFirstLinkWithClass(".gh-restart-training-button");
     }
 
     private function seeExcerciseList()
@@ -88,7 +117,12 @@ class TrainingModeControllerTest extends BaseController
 
     private function markExcerciseWithIdAsDone($id)
     {
-        $this->getPageWithUrl("/training-mode/" . $id . "/done");
+        $this->getPageWithUrl("/training-mode/excercise/" . $id . "/done");
+    }
+
+    private function restartTrainingWithId($id)
+    {
+        $this->getPageWithUrl("/training-mode/" . $id . "/restart");
     }
 
     private function seeNoContinueButton()
