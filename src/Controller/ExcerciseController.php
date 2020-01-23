@@ -66,33 +66,31 @@ class ExcerciseController extends AbstractController
     {
         $excercise = $this->getDoctrine()->getRepository(Excercise::class)->find($id);
 
-        if ($excercise)
+        if (!$excercise)
         {
-            $form = $this->createForm(ExcerciseType::class, $excercise);
-
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid())
-            {
-                $excercise = $form->getData();
-
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($excercise);
-                $entityManager->flush();
-
-                return $this->redirectToRoute('training_index');
-            }
-
-            return $this->render(
-                            'excercise/new_edit.twig',
-                            [
-                                'form' => $form->createView()
-                            ]
-            );
+            throw $this->createNotFoundException('The excercise does not exist');
         }
-        else
+
+        $form = $this->createForm(ExcerciseType::class, $excercise);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid())
         {
-            return $this->redirectToRoute("training_index");
+            $excercise = $form->getData();
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($excercise);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('training_index');
         }
+
+        return $this->render(
+                        'excercise/new_edit.twig',
+                        [
+                            'form' => $form->createView()
+                        ]
+        );
     }
 
 }

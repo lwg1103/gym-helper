@@ -7,6 +7,7 @@ use App\Service\TrainingInstanceGenerator;
 use App\Entity\TrainingInstance;
 use App\Entity\Training;
 use App\Entity\Excercise;
+use App\Model\ExcerciseInstanceStatus;
 
 class TrainingInstanceGeneratorTest extends TestCase
 {
@@ -76,7 +77,7 @@ class TrainingInstanceGeneratorTest extends TestCase
             );
             
             $this->assertEquals(
-                    0,
+                    ExcerciseInstanceStatus::Todo,
                     $excercise->getResult()
             );
         }

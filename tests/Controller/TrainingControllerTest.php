@@ -52,6 +52,12 @@ class TrainingControllerTest extends BaseController
         $this->trainingNameOnPositionIs("Tuesday", 0);
     }
     
+    public function testThrows404IfEditedTrainingDoesNotExists()
+    {
+        $this->getPageWithUrl("/training/99999/edit");
+        $this->pageReturnsNotFoundCode();
+    }
+    
     private function fillTrainingForm($trainingName)
     {
         $this->client->submitForm("Save",[
@@ -82,8 +88,7 @@ class TrainingControllerTest extends BaseController
     
     private function seeNTrainingsListed(int $n)
     {
-        $this->assertEquals($n, $this->crawler->filter("h2.gh-training-name")
-                ->count());
+        $this->assertCountElementsByClass($n, "h2.gh-training-name");
     }
     
     private function trainingNameOnPositionIs(string $name, int $position)

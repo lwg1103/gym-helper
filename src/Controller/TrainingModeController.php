@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Training;
 use App\Entity\TrainingInstance;
 use App\Service\TrainingInstanceGenerator;
+use App\Entity\ExcerciseInstance;
+use App\Model\ExcerciseInstanceStatus;
 
 /**
  * @Route("/training-mode", name="training_mode_")
@@ -70,6 +72,25 @@ class TrainingModeController extends AbstractController
 
         return $this->redirectToRoute("training_mode_show", ['id' => $trainingInstance->getId()]);
     }
+    
+    /**
+     * 
+     * @Route("/{id}/done", name="done")
+     */
+    public function done(int $id)
+    {
+        $excerciseInstance = $this->getExcerciseInstance($id);
+        
+        if (!$excerciseInstance)
+        {
+            throw $this->createNotFoundException('The excercise does not exist');
+        }
+        
+        $excerciseInstance->setResult(ExcerciseInstanceStatus::Done);
+        $this->getDoctrine()->getManager()->flush();
+        
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getId()]);
+    }
 
     private function getTraining($id)
     {
@@ -79,6 +100,11 @@ class TrainingModeController extends AbstractController
     private function getTrainingInstance($id)
     {
         return $this->getDoctrine()->getRepository(TrainingInstance::class)->find($id);
+    }
+
+    private function getExcerciseInstance($id)
+    {
+        return $this->getDoctrine()->getRepository(ExcerciseInstance::class)->find($id);
     }
 
 }

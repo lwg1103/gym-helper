@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Training;
 use App\Entity\TrainingInstance;
 use \App\Entity\ExcerciseInstance;
+use App\Model\ExcerciseInstanceStatus;
 
 class TrainingInstanceGenerator
 {
@@ -24,7 +25,7 @@ class TrainingInstanceGenerator
                         ->setWeight($excercise->getWeight())
                         ->setRepeats($excercise->getRepeats())
                         ->setBreakTime($excercise->getBreakTime())
-                        ->setResult(0)
+                        ->setResult(ExcerciseInstanceStatus::Todo)
                         ->setTrainingInstance($trainingInstance);
 
                 $trainingInstance->addExcercise($excerciseInstance);
