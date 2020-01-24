@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class ExcerciseInstanceStatus
+class ExcerciseInstanceResult
 {
     const Todo = 0;
     const Done = 1;

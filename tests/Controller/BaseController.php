@@ -66,6 +66,11 @@ class BaseController extends WebTestCase
         );
     }
     
+    protected function clickLink($link)
+    {
+        $this->crawler = $this->client->click($link);
+    }
+    
     protected function assertCountElementsByClass($expectedNumber, $class)
     {
         $this->assertEquals($expectedNumber, $this->crawler->filter($class)

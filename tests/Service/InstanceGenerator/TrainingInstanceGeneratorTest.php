@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Tests\Test;
+namespace App\Tests\Service\InstanceGenerator;
 
 use PHPUnit\Framework\TestCase;
-use App\Service\TrainingInstanceGenerator;
+use App\Service\InstanceGenerator\TrainingInstanceGenerator;
 use App\Entity\TrainingInstance;
 use App\Entity\Training;
 use App\Entity\Excercise;
-use App\Model\ExcerciseInstanceStatus;
+use App\Model\ExcerciseInstanceResult;
 
 class TrainingInstanceGeneratorTest extends TestCase
 {
@@ -77,7 +77,7 @@ class TrainingInstanceGeneratorTest extends TestCase
             );
             
             $this->assertEquals(
-                    ExcerciseInstanceStatus::Todo,
+                    ExcerciseInstanceResult::Todo,
                     $excercise->getResult()
             );
         }
