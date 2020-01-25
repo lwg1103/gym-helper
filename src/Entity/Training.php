@@ -17,17 +17,14 @@ class Training
      * @ORM\Column(type="integer")
      */
     private $id;
-
     /**
      * @ORM\Column(type="string", length=255)
      */
     private $name;
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Excercise", mappedBy="training", orphanRemoval=true)
      */
     private $excercises;
-
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\TrainingInstance", mappedBy="baseTraining", cascade={"persist", "remove"})
      */
@@ -65,7 +62,8 @@ class Training
 
     public function addExcercise(Excercise $excercise): self
     {
-        if (!$this->excercises->contains($excercise)) {
+        if (!$this->excercises->contains($excercise))
+        {
             $this->excercises[] = $excercise;
             $excercise->setTraining($this);
         }
@@ -75,17 +73,19 @@ class Training
 
     public function removeExcercise(Excercise $excercise): self
     {
-        if ($this->excercises->contains($excercise)) {
+        if ($this->excercises->contains($excercise))
+        {
             $this->excercises->removeElement($excercise);
             // set the owning side to null (unless already changed)
-            if ($excercise->getTraining() === $this) {
+            if ($excercise->getTraining() === $this)
+            {
                 $excercise->setTraining(null);
             }
         }
 
         return $this;
     }
-    
+
     public function __toString()
     {
         return $this->name;
@@ -100,13 +100,22 @@ class Training
     {
         $this->trainingInstance = $trainingInstance;
 
-        // set (or unset) the owning side of the relation if necessary
-        $newBaseTraining = null === $trainingInstance ? null : $this;
-        if ($trainingInstance->getBaseTraining() !== $newBaseTraining) {
-            $trainingInstance->setBaseTraining($newBaseTraining);
+        if ($trainingInstance)
+        {
+            // set (or unset) the owning side of the relation if necessary
+            $newBaseTraining = $this;
+            if ($trainingInstance->getBaseTraining() !== $newBaseTraining)
+            {
+                $trainingInstance->setBaseTraining($newBaseTraining);
+            }
         }
 
         return $this;
+    }
+    
+    public function isStarted()
+    {
+        return null != $this->trainingInstance;
     }
 
 }

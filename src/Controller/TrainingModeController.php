@@ -5,13 +5,12 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Training;
-use App\Entity\TrainingInstance;
-use App\Service\InstanceGenerator\ITrainingInstanceGenerator;
 use App\Entity\ExcerciseInstance;
 use App\Model\ExcerciseInstanceResult;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Service\TrainingManager\ITrainingInstanceManager;
 use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
+use App\Service\TrainingManager\Exception\TrainingNotStartedException;
 
 /**
  * @Route("/training-mode", name="training_mode_")
@@ -39,7 +38,7 @@ class TrainingModeController extends AbstractController
      */
     public function show(int $id)
     {
-        $training = $this->getTrainingInstance($id);
+        $training = $this->getTraining($id)->getTrainingInstance();
 
         return $this->render(
                         'training-mode/show.twig',
@@ -56,9 +55,9 @@ class TrainingModeController extends AbstractController
     {
         try
         {
-            $trainingInstance = $trainingInstanceManager->startTraining($this->getTraining($id));
+            $trainingInstanceManager->startTraining($this->getTraining($id));
 
-            return $this->redirectToRoute("training_mode_show", ['id' => $trainingInstance->getId()]);
+            return $this->redirectToRoute("training_mode_show", ['id' => $id]);
         }
         catch (TrainingAlreadyStartedException $ex)
         {
@@ -69,16 +68,18 @@ class TrainingModeController extends AbstractController
     /**
      * @Route("/{id}/restart", name="restart")
      */
-    public function restart(int $id, ITrainingInstanceGenerator $generator)
+    public function restart(int $id, ITrainingInstanceManager $trainingInstanceManager)
     {
-        $trainingInstance = $this->getTrainingInstance($id);
+        try
+        {
+            $trainingInstanceManager->restartTraining($this->getTraining($id));
 
-        $this->getDoctrine()->getManager()->remove($trainingInstance);
-        $this->getDoctrine()->getManager()->flush();
-
-        $newTrainingInstance = $this->generateTrainingInstance($generator, $trainingInstance->getBaseTraining());
-
-        return $this->redirectToRoute("training_mode_show", ['id' => $newTrainingInstance->getId()]);
+            return $this->redirectToRoute("training_mode_show", ['id' => $id]);
+        }
+        catch (TrainingNotStartedException $ex)
+        {
+            throw new HttpException(400, 'The training is not started');
+        }
     }
 
     /**
@@ -91,7 +92,7 @@ class TrainingModeController extends AbstractController
         $excerciseInstance->setResult(ExcerciseInstanceResult::Done);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getId()]);
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
     }
 
     private function getTraining($id)
@@ -106,18 +107,6 @@ class TrainingModeController extends AbstractController
         return $training;
     }
 
-    private function getTrainingInstance($id)
-    {
-        $trainingInstance = $this->getDoctrine()->getRepository(TrainingInstance::class)->find($id);
-
-        if (!$trainingInstance)
-        {
-            throw $this->createNotFoundException('The training instance does not exist');
-        }
-
-        return $trainingInstance;
-    }
-
     private function getExcerciseInstance($id)
     {
         $excerciseInstance = $this->getDoctrine()->getRepository(ExcerciseInstance::class)->find($id);
@@ -128,16 +117,6 @@ class TrainingModeController extends AbstractController
         }
 
         return $excerciseInstance;
-    }
-
-    private function generateTrainingInstance($generator, $training)
-    {
-        $trainingInstance = $generator->generate($training);
-
-        $this->getDoctrine()->getManager()->persist($trainingInstance);
-        $this->getDoctrine()->getManager()->flush();
-
-        return $trainingInstance;
     }
 
 }
