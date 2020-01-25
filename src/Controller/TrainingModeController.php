@@ -10,6 +10,8 @@ use App\Service\InstanceGenerator\ITrainingInstanceGenerator;
 use App\Entity\ExcerciseInstance;
 use App\Model\ExcerciseInstanceResult;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Service\TrainingManager\ITrainingInstanceManager;
+use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
 
 /**
  * @Route("/training-mode", name="training_mode_")
@@ -50,18 +52,18 @@ class TrainingModeController extends AbstractController
     /**
      * @Route("/{id}/start", name="start")
      */
-    public function start(int $id, ITrainingInstanceGenerator $generator)
+    public function start(int $id, ITrainingInstanceManager $trainingInstanceManager)
     {
-        $training = $this->getTraining($id);
+        try
+        {
+            $trainingInstance = $trainingInstanceManager->startTraining($this->getTraining($id));
 
-        if ($training->getTrainingInstance())
+            return $this->redirectToRoute("training_mode_show", ['id' => $trainingInstance->getId()]);
+        }
+        catch (TrainingAlreadyStartedException $ex)
         {
             throw new HttpException(400, 'The training is already started');
         }
-
-        $trainingInstance = $this->generateTrainingInstance($generator, $training);
-
-        return $this->redirectToRoute("training_mode_show", ['id' => $trainingInstance->getId()]);
     }
 
     /**
@@ -95,24 +97,24 @@ class TrainingModeController extends AbstractController
     private function getTraining($id)
     {
         $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
-        
+
         if (!$training)
         {
             throw $this->createNotFoundException('The training does not exist');
         }
-        
+
         return $training;
     }
 
     private function getTrainingInstance($id)
     {
         $trainingInstance = $this->getDoctrine()->getRepository(TrainingInstance::class)->find($id);
-        
+
         if (!$trainingInstance)
         {
             throw $this->createNotFoundException('The training instance does not exist');
         }
-        
+
         return $trainingInstance;
     }
 
@@ -124,7 +126,7 @@ class TrainingModeController extends AbstractController
         {
             throw $this->createNotFoundException('The excercise instance does not exist');
         }
-        
+
         return $excerciseInstance;
     }
 
