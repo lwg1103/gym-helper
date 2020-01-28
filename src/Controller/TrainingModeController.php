@@ -5,10 +5,13 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Training;
-use App\Entity\TrainingInstance;
-use App\Service\TrainingInstanceGenerator;
 use App\Entity\ExcerciseInstance;
-use App\Model\ExcerciseInstanceStatus;
+use App\Model\ExcerciseInstanceResult;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Service\TrainingManager\ITrainingInstanceManager;
+use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
+use App\Service\TrainingManager\Exception\TrainingNotStartedException;
+use App\Service\TrainingManager\DoctrineExcerciseInstanceManager;
 
 /**
  * @Route("/training-mode", name="training_mode_")
@@ -36,102 +39,105 @@ class TrainingModeController extends AbstractController
      */
     public function show(int $id)
     {
-        $training = $this->getTrainingInstance($id);
+        $training = $this->getTraining($id)->getTrainingInstance();
 
-        if ($training)
-        {
-            return $this->render(
-                            'training-mode/show.twig',
-                            [
-                                'training' => $training
-                            ]
-            );
-        }
-        else
-        {
-            return $this->redirectToRoute("training_mode_index");
-        }
+        return $this->render(
+                        'training-mode/show.twig',
+                        [
+                            'training' => $training
+                        ]
+        );
     }
 
     /**
      * @Route("/{id}/start", name="start")
      */
-    public function start(int $id, TrainingInstanceGenerator $generator)
+    public function start(int $id, ITrainingInstanceManager $trainingInstanceManager)
     {
-        $training         = $this->getTraining($id);
-        
-        if ($training->getTrainingInstance())
+        try
         {
-            return $this->redirectToRoute("training_mode_show", ['id' => $training->getTrainingInstance()->getId()]);
-        }
-        
-        $trainingInstance = $this->generateTrainingInstance($generator, $training);
+            $trainingInstanceManager->startTraining($this->getTraining($id));
 
-        return $this->redirectToRoute("training_mode_show", ['id' => $trainingInstance->getId()]);
+            return $this->redirectToRoute("training_mode_show", ['id' => $id]);
+        }
+        catch (TrainingAlreadyStartedException $ex)
+        {
+            throw new HttpException(400, 'The training is already started');
+        }
     }
 
     /**
      * @Route("/{id}/restart", name="restart")
      */
-    public function restart(int $id, TrainingInstanceGenerator $generator)
+    public function restart(int $id, ITrainingInstanceManager $trainingInstanceManager)
     {
-        $trainingInstance = $this->getTrainingInstance($id);
-        
-        if (!$trainingInstance)
+        try
         {
-            throw $this->createNotFoundException('The excercise does not exist');
-        }
-        
-        $this->getDoctrine()->getManager()->remove($trainingInstance);
-        $this->getDoctrine()->getManager()->flush();
-     
-        $newTrainingInstance = $this->generateTrainingInstance($generator, $trainingInstance->getBaseTraining());
+            $trainingInstanceManager->restartTraining($this->getTraining($id));
 
-        return $this->redirectToRoute("training_mode_show", ['id' => $newTrainingInstance->getId()]);
+            return $this->redirectToRoute("training_mode_show", ['id' => $id]);
+        }
+        catch (TrainingNotStartedException $ex)
+        {
+            throw new HttpException(400, 'The training is not started');
+        }
     }
     
     /**
-     * 
-     * @Route("/excercise/{id}/done", name="done_excercise")
+     * @Route("/excercise/{id}/ok", name="ok_excercise")
      */
-    public function done(int $id)
+    public function setExcerciseOk(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
     {
         $excerciseInstance = $this->getExcerciseInstance($id);
+        $excerciseManager->markAsOk($excerciseInstance);        
         
-        if (!$excerciseInstance)
-        {
-            throw $this->createNotFoundException('The excercise does not exist');
-        }
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+    }
+    
+    /**
+     * @Route("/excercise/{id}/easy", name="easy_excercise")
+     */
+    public function setExcerciseEasy(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
+    {
+        $excerciseInstance = $this->getExcerciseInstance($id);
+        $excerciseManager->markAsTooEasy($excerciseInstance);        
         
-        $excerciseInstance->setResult(ExcerciseInstanceStatus::Done);
-        $this->getDoctrine()->getManager()->flush();
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+    }
+    
+    /**
+     * @Route("/excercise/{id}/hard", name="hard_excercise")
+     */
+    public function setExcerciseHard(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
+    {
+        $excerciseInstance = $this->getExcerciseInstance($id);
+        $excerciseManager->markAsTooHard($excerciseInstance);        
         
-        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getId()]);
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
     }
 
     private function getTraining($id)
     {
-        return $this->getDoctrine()->getRepository(Training::class)->find($id);
-    }
+        $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
 
-    private function getTrainingInstance($id)
-    {
-        return $this->getDoctrine()->getRepository(TrainingInstance::class)->find($id);
+        if (!$training)
+        {
+            throw $this->createNotFoundException('The training does not exist');
+        }
+
+        return $training;
     }
 
     private function getExcerciseInstance($id)
     {
-        return $this->getDoctrine()->getRepository(ExcerciseInstance::class)->find($id);
-    }
-    
-    private function generateTrainingInstance($generator, $training)
-    {
-        $trainingInstance = $generator->generate($training);
-        
-        $this->getDoctrine()->getManager()->persist($trainingInstance);
-        $this->getDoctrine()->getManager()->flush();
-        
-        return $trainingInstance;
+        $excerciseInstance = $this->getDoctrine()->getRepository(ExcerciseInstance::class)->find($id);
+
+        if (!$excerciseInstance)
+        {
+            throw $this->createNotFoundException('The excercise instance does not exist');
+        }
+
+        return $excerciseInstance;
     }
 
 }

@@ -31,7 +31,29 @@ class TrainingModeControllerTest extends BaseController
         $this->enterFirstTraining();
         $this->followRedirect();
         $this->seeNExcercises(6);
-        $this->marFirstExcerciseAsDone();
+        $this->markFirstExcerciseAsOk();
+        $this->followRedirect();
+        $this->seeNExcercises(6 - 1);
+    }
+
+    public function testRemoveEasyExcercise()
+    {
+        $this->onTrainingModeIndex();
+        $this->enterFirstTraining();
+        $this->followRedirect();
+        $this->seeNExcercises(6);
+        $this->markFirstExcerciseAsEasy();
+        $this->followRedirect();
+        $this->seeNExcercises(6 - 1);
+    }
+
+    public function testRemoveHardExcercise()
+    {
+        $this->onTrainingModeIndex();
+        $this->enterFirstTraining();
+        $this->followRedirect();
+        $this->seeNExcercises(6);
+        $this->markFirstExcerciseAsHard();
         $this->followRedirect();
         $this->seeNExcercises(6 - 1);
     }
@@ -47,7 +69,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testThrows404IfDoneExcerciseDoesNotExists()
     {
-        $this->markExcerciseWithIdAsDone("99999");
+        $this->markExcerciseWithIdAsOk("99999");
         $this->pageReturnsNotFoundCode();
     }
 
@@ -55,6 +77,21 @@ class TrainingModeControllerTest extends BaseController
     {
         $this->restartTrainingWithId("99999");
         $this->pageReturnsNotFoundCode();
+    }
+
+    public function testThrows404IfRequestedTrainingDoesNotExists()
+    {
+        $this->seeTrainingWithId("99999");
+        $this->pageReturnsNotFoundCode();
+    }
+    
+    public function testThrows400IfTryToStartStartedTraining()
+    {
+        $this->onTrainingModeIndex();
+        $startLink = $this->getStartTrainingLink();
+        $this->clickLink($startLink);
+        $this->clickLink($startLink);
+        $this->pageReturnsCodeN(400);
     }
     
     public function testRestartButtonCreatesNewTrainingSoISeeDoneExcercisesAgain()
@@ -64,7 +101,7 @@ class TrainingModeControllerTest extends BaseController
         $this->enterFirstTraining();
         $this->followRedirect();
         $this->seeNExcercises(6);
-        $this->marFirstExcerciseAsDone();
+        $this->markFirstExcerciseAsOk();
         $this->followRedirect();
         $this->seeNExcercises(6 - 1);
         
@@ -110,19 +147,34 @@ class TrainingModeControllerTest extends BaseController
         $this->assertCountElementsByClass($n, ".gh-excercise-name");
     }
 
-    private function marFirstExcerciseAsDone()
+    private function markFirstExcerciseAsOk()
     {
-        $this->clickFirstLinkWithClass(".gh-excercise-done");
+        $this->clickFirstLinkWithClass(".gh-excercise-ok");
     }
 
-    private function markExcerciseWithIdAsDone($id)
+    private function markFirstExcerciseAsEasy()
     {
-        $this->getPageWithUrl("/training-mode/excercise/" . $id . "/done");
+        $this->clickFirstLinkWithClass(".gh-excercise-easy");
+    }
+
+    private function markFirstExcerciseAsHard()
+    {
+        $this->clickFirstLinkWithClass(".gh-excercise-hard");
+    }
+
+    private function markExcerciseWithIdAsOk($id)
+    {
+        $this->getPageWithUrl("/training-mode/excercise/" . $id . "/ok");
     }
 
     private function restartTrainingWithId($id)
     {
         $this->getPageWithUrl("/training-mode/" . $id . "/restart");
+    }
+
+    private function seeTrainingWithId($id)
+    {
+        $this->getPageWithUrl("/training-mode/" . $id);
     }
 
     private function seeNoContinueButton()
@@ -133,6 +185,11 @@ class TrainingModeControllerTest extends BaseController
     private function seeContinueButton()
     {        
         $this->assertCountElementsByClass(1, ".gh-continue-training-button");
+    }
+    
+    private function getStartTrainingLink()
+    {
+        return $this->crawler->filter(".gh-start-training-button")->eq(0)->link();
     }
 
 }
