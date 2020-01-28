@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Service\TrainingManager\ITrainingInstanceManager;
 use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
 use App\Service\TrainingManager\Exception\TrainingNotStartedException;
+use App\Service\TrainingManager\DoctrineExcerciseInstanceManager;
 
 /**
  * @Route("/training-mode", name="training_mode_")
@@ -81,17 +82,37 @@ class TrainingModeController extends AbstractController
             throw new HttpException(400, 'The training is not started');
         }
     }
-
+    
     /**
-     * @Route("/excercise/{id}/done", name="done_excercise")
+     * @Route("/excercise/{id}/ok", name="ok_excercise")
      */
-    public function done(int $id)
+    public function setExcerciseOk(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
     {
         $excerciseInstance = $this->getExcerciseInstance($id);
-
-        $excerciseInstance->setResult(ExcerciseInstanceResult::Done);
-        $this->getDoctrine()->getManager()->flush();
-
+        $excerciseManager->markAsOk($excerciseInstance);        
+        
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+    }
+    
+    /**
+     * @Route("/excercise/{id}/easy", name="easy_excercise")
+     */
+    public function setExcerciseEasy(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
+    {
+        $excerciseInstance = $this->getExcerciseInstance($id);
+        $excerciseManager->markAsTooEasy($excerciseInstance);        
+        
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+    }
+    
+    /**
+     * @Route("/excercise/{id}/hard", name="hard_excercise")
+     */
+    public function setExcerciseHard(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
+    {
+        $excerciseInstance = $this->getExcerciseInstance($id);
+        $excerciseManager->markAsTooHard($excerciseInstance);        
+        
         return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
     }
 

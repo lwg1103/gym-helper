@@ -100,7 +100,7 @@ class DoctrineTrainingInstanceManagerTest extends TestCase
 
     private function createEntityManagerMock()
     {
-        $this->entityManagerMock = $this->createMock(EntityManager::class);
+        $this->entityManagerMock = $this->createMock(EntityManagerInterface::class);
     }
 
     private function createGeneratorMock()
