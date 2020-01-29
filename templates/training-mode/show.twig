@@ -43,5 +43,19 @@
             {% endif %}
         {% endfor %}
     </table>
-    <div class="col-md-4"><a class="btn btn-secondary" href="{{ path('training_mode_index') }}">Back</a></div>
+    <div class="row">
+        <div class="col-md-6">
+            <a class="btn btn-secondary" href="{{ path('training_mode_index') }}">
+                Back
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a 
+                class="gh-finish-training btn btn-primary" 
+                href="{{ path('training_mode_finish', {"id": training.baseTraining.id}) }}"
+                >
+                Finish Training
+            </a>
+        </div>
+    </div>
 {% endblock %}

@@ -6,7 +6,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Training;
 use App\Entity\ExcerciseInstance;
-use App\Model\ExcerciseInstanceResult;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Service\TrainingManager\ITrainingInstanceManager;
 use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
@@ -76,6 +75,23 @@ class TrainingModeController extends AbstractController
             $trainingInstanceManager->restartTraining($this->getTraining($id));
 
             return $this->redirectToRoute("training_mode_show", ['id' => $id]);
+        }
+        catch (TrainingNotStartedException $ex)
+        {
+            throw new HttpException(400, 'The training is not started');
+        }
+    }
+
+    /**
+     * @Route("/{id}/finish", name="finish")
+     */
+    public function finish(int $id, ITrainingInstanceManager $trainingInstanceManager)
+    {
+        try
+        {
+            $trainingInstanceManager->finishTraining($this->getTraining($id));
+
+            return $this->redirectToRoute("training_mode_index");
         }
         catch (TrainingNotStartedException $ex)
         {
