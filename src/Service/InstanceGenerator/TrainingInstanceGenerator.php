@@ -26,7 +26,8 @@ class TrainingInstanceGenerator implements ITrainingInstanceGenerator
                         ->setRepeats($excercise->getRepeats())
                         ->setBreakTime($excercise->getBreakTime())
                         ->setResult(ExcerciseInstanceResult::Todo)
-                        ->setTrainingInstance($trainingInstance);
+                        ->setTrainingInstance($trainingInstance)
+                        ->setBaseExcercise($excercise);
 
                 $trainingInstance->addExcercise($excerciseInstance);
             }

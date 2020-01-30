@@ -77,6 +77,11 @@ class TrainingInstanceGeneratorTest extends TestCase
             );
             
             $this->assertEquals(
+                    $training->getExcercises()[$trKey],
+                    $excercise->getBaseExcercise()
+            );
+            
+            $this->assertEquals(
                     ExcerciseInstanceResult::Todo,
                     $excercise->getResult()
             );
