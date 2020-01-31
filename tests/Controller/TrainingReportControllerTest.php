@@ -13,6 +13,13 @@ class TrainingReportControllerTest extends BaseController
         $this->seeExcerciseNames(["exc 1", "exc 2"]);
         $this->seeExcerciseResults(["Ok", "Hard"]);
     }
+    
+    public function testNavigateToTrainingMode()
+    {
+        $this->enterTrainingReportPage();
+        $this->clickBackutton();
+        $this->seeAllTrainingsOnList();
+    }
 
     public function testThrows404IfRequestedTrainingDoesNotExists()
     {
@@ -62,6 +69,19 @@ class TrainingReportControllerTest extends BaseController
         {
             $this->assertEquals($value, $this->crawler->filter(".gh-excercise-result")->eq($key)->html()); 
         }
+    }
+    
+    private function clickBackutton()
+    {
+        $this->clickFirstLinkWithClass(".gh-back-button");
+    }
+
+    private function seeAllTrainingsOnList()
+    {
+        $this->assertCountElementsByClass(3, "h2.gh-training-name");
+        $this->assertEquals("Day 1", $this->crawler->filter("h2.gh-training-name")->eq(0)->html());
+        $this->assertEquals("Day 2", $this->crawler->filter("h2.gh-training-name")->eq(1)->html());
+        $this->assertEquals("Day 3", $this->crawler->filter("h2.gh-training-name")->eq(2)->html());
     }
 
 }
