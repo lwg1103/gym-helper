@@ -9,7 +9,7 @@
                 <th>weight</th>
                 <th>repeats</th>
                 <th>break [sec]</th>
-                <th>action</th>
+                <th>result</th>
             </tr>
         </thead>
         {% for excercise in training.excercises %}
@@ -21,15 +21,41 @@
                     <td>{{ excercise.breakTime }}</td>
                     <td>
                         <a 
-                            class="gh-excercise-done btn btn-success" 
-                            href="{{ path('training_mode_done_excercise', {"id": excercise.id}) }}"
+                            class="gh-excercise-hard btn btn-danger" 
+                            href="{{ path('training_mode_hard_excercise', {"id": excercise.id}) }}"
                             >
-                            Done
+                            Hard
+                        </a>
+                        <a 
+                            class="gh-excercise-ok btn btn-warning" 
+                            href="{{ path('training_mode_ok_excercise', {"id": excercise.id}) }}"
+                            >
+                            Ok
+                        </a>
+                        <a 
+                            class="gh-excercise-easy btn btn-success" 
+                            href="{{ path('training_mode_easy_excercise', {"id": excercise.id}) }}"
+                            >
+                            Easy
                         </a>
                     </td>
                 </tr>
             {% endif %}
         {% endfor %}
     </table>
-    <div class="col-md-4"><a class="btn btn-secondary" href="{{ path('training_mode_index') }}">Back</a></div>
+    <div class="row">
+        <div class="col-md-6">
+            <a class="btn btn-secondary" href="{{ path('training_mode_index') }}">
+                Back
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a 
+                class="gh-finish-training btn btn-primary" 
+                href="{{ path('training_mode_finish', {"id": training.baseTraining.id}) }}"
+                >
+                Finish Training
+            </a>
+        </div>
+    </div>
 {% endblock %}

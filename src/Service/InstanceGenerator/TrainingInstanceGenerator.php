@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\InstanceGenerator;
 
 use App\Entity\Training;
 use App\Entity\TrainingInstance;
 use \App\Entity\ExcerciseInstance;
-use App\Model\ExcerciseInstanceStatus;
+use App\Model\ExcerciseInstanceResult;
 
-class TrainingInstanceGenerator
+class TrainingInstanceGenerator implements ITrainingInstanceGenerator
 {
 
     public function generate(Training $training)
@@ -25,8 +25,9 @@ class TrainingInstanceGenerator
                         ->setWeight($excercise->getWeight())
                         ->setRepeats($excercise->getRepeats())
                         ->setBreakTime($excercise->getBreakTime())
-                        ->setResult(ExcerciseInstanceStatus::Todo)
-                        ->setTrainingInstance($trainingInstance);
+                        ->setResult(ExcerciseInstanceResult::Todo)
+                        ->setTrainingInstance($trainingInstance)
+                        ->setBaseExcercise($excercise);
 
                 $trainingInstance->addExcercise($excerciseInstance);
             }
