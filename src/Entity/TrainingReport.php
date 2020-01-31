@@ -24,7 +24,7 @@ class TrainingReport
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ExcerciseReport", mappedBy="trainingReport", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\ExcerciseReport", mappedBy="trainingReport", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private $excerciseReports;
 

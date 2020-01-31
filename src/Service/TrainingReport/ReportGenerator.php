@@ -14,7 +14,8 @@ class ReportGenerator implements IReportGenerator
     {
         $trainingReport = new TrainingReport();
 
-        $trainingReport->setBaseTraining($trainingInstance->getBaseTraining());
+        $trainingReport->setBaseTraining($trainingInstance->getBaseTraining())
+                ->setName($trainingInstance->getBaseTraining()->getName());
 
         $excerciseReports = $this->calculateExcercisesReports($trainingInstance->getExcercises());
 

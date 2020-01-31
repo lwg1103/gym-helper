@@ -4,13 +4,13 @@ namespace App\Tests\Service\TrainingManager;
 
 use PHPUnit\Framework\TestCase;
 use App\Service\TrainingManager\DoctrineTrainingInstanceManager;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\InstanceGenerator\TrainingInstanceGenerator;
 use App\Entity\Training;
 use App\Entity\TrainingInstance;
 use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
 use App\Service\TrainingManager\Exception\TrainingNotStartedException;
+use App\Service\TrainingReport\ReportGenerator;
 
 class DoctrineTrainingInstanceManagerTest extends TestCase
 {
@@ -25,8 +25,10 @@ class DoctrineTrainingInstanceManagerTest extends TestCase
     /**
      * @var TrainingInstanceGenerator
      */
-    private $generatorMock;
+    private $trainingInstancegeneratorMock;
+    private $trainingReportGeneratorMock;
     private $trainingInstance;
+    private $trainingReport;
     private $training;
 
     public function testStartTrainingPersistsNewTrainingInstance()
@@ -65,6 +67,7 @@ class DoctrineTrainingInstanceManagerTest extends TestCase
     {
         $this->trainingInstanceIsAlreadyAssignedToTraining();
         $this->expectRemovingOneTrainingInstance();
+        $this->expectPersistingOneTrainingReport();
         $this->finishTraining();
         $this->assertTrainingHasNoInstanceAttached();
     }
@@ -80,11 +83,14 @@ class DoctrineTrainingInstanceManagerTest extends TestCase
     {
         $this->createTraining();
         $this->createTrainingInstance();
+        $this->createTrainingReport();
         $this->createEntityManagerMock();
-        $this->createGeneratorMock();
+        $this->createTrainingInstancegeneratorMock();
+        $this->createTrainingReportGeneratorMock();
         $this->testSubject = new DoctrineTrainingInstanceManager(
                 $this->entityManagerMock,
-                $this->generatorMock
+                $this->trainingInstancegeneratorMock,
+                $this->trainingReportGeneratorMock
         );
     }
 
@@ -98,15 +104,20 @@ class DoctrineTrainingInstanceManagerTest extends TestCase
         $this->trainingInstance = new TrainingInstance();
     }
 
+    private function createTrainingReport()
+    {
+        $this->trainingReport = new \App\Entity\TrainingReport();
+    }
+
     private function createEntityManagerMock()
     {
         $this->entityManagerMock = $this->createMock(EntityManagerInterface::class);
     }
 
-    private function createGeneratorMock()
+    private function createTrainingInstancegeneratorMock()
     {
-        $this->generatorMock = $this->createMock(TrainingInstanceGenerator::class);
-        $this->generatorMock->expects($this->any())
+        $this->trainingInstancegeneratorMock = $this->createMock(TrainingInstanceGenerator::class);
+        $this->trainingInstancegeneratorMock->expects($this->any())
                 ->method('generate')
                 ->willReturn($this->trainingInstance);
     }
@@ -134,6 +145,15 @@ class DoctrineTrainingInstanceManagerTest extends TestCase
         $this->entityManagerMock->expects($this->any())
                 ->method('flush');
     }
+    
+    private function expectPersistingOneTrainingReport()
+    {
+        $this->entityManagerMock->expects($this->once())
+                ->method('persist')
+                ->with($this->trainingReport);
+        $this->entityManagerMock->expects($this->any())
+                ->method('flush'); 
+    }
 
     private function expectRemovingOneTrainingInstance()
     {
@@ -152,6 +172,14 @@ class DoctrineTrainingInstanceManagerTest extends TestCase
     private function assertTrainingHasNoInstanceAttached()
     {
         $this->assertNull($this->training->getTrainingInstance());
+    }
+    
+    private function createTrainingReportGeneratorMock()
+    {
+        $this->trainingReportGeneratorMock = $this->createMock(ReportGenerator::class);
+        $this->trainingReportGeneratorMock->expects($this->any())
+                ->method('generate')
+                ->willReturn($this->trainingReport);
     }
 
 }

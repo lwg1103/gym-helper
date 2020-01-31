@@ -11,6 +11,7 @@ use App\Entity\TrainingReport;
 
 class ReportGeneratorTest extends TestCase
 {
+    const baseTrainingName = "training 1";
     /**
      * @var DoctrineReportGenerator 
      */
@@ -63,6 +64,11 @@ class ReportGeneratorTest extends TestCase
                 ExcerciseInstanceResult::TooHard,
                 $this->trainingReport->getExcerciseReports()->get(1)->getResult()
         );
+        
+        $this->assertEquals(
+                ReportGeneratorTest::baseTrainingName,
+                $this->trainingReport->getName()
+                );
     }
 
     protected function setUp(): void
@@ -73,7 +79,11 @@ class ReportGeneratorTest extends TestCase
 
     private function createTrainingInstances()
     {
+        $baseTraining = new \App\Entity\Training();
+        $baseTraining->setName(ReportGeneratorTest::baseTrainingName);
+        
         $this->trainingInstance = new TrainingInstance();
+        $this->trainingInstance->setBaseTraining($baseTraining);
     }
 
     private function generateReport()
