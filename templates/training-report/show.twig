@@ -1,0 +1,24 @@
+{% extends "base.twig" %}
+{% block title %}Training Report{% endblock %}
+{% block body %}
+    <h1 class="gh-training-report-header">Report</h1>
+    <h2>{{ report.name }}</h2>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>excercise</th>
+                <th>weight</th>
+                <th>series</th>
+                <th>result</th>
+            </tr>
+        </thead>
+        {% for exReport in report.excerciseReports %}
+            <tr>
+                <td class="gh-excercise-name">{{ exReport.name }}</td>
+                <td>{{ exReport.weight }}</td>
+                <td>{{ exReport.series }}</td>
+                <td>{{ exReport.result|excercise_result }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

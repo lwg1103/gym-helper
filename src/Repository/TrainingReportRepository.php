@@ -19,32 +19,14 @@ class TrainingReportRepository extends ServiceEntityRepository
         parent::__construct($registry, TrainingReport::class);
     }
 
-    // /**
-    //  * @return TrainingReport[] Returns an array of TrainingReport objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findLastReportForTraining($training): ?TrainingReport
     {
         return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('t.baseTraining = :val')
+            ->setParameter('val', $training)
+            ->orderBy('t.id', 'DESC')
             ->getQuery()
-            ->getResult()
+            ->getResult()[0]
         ;
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?TrainingReport
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

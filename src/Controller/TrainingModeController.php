@@ -89,9 +89,13 @@ class TrainingModeController extends AbstractController
     {
         try
         {
-            $trainingInstanceManager->finishTraining($this->getTraining($id));
+            $training = $this->getTraining($id);
+            $trainingInstanceManager->finishTraining($training);
 
-            return $this->redirectToRoute("training_mode_index");
+            return $this->redirectToRoute(
+                    "training_report_show", 
+                    ['id' => $this->getLastTrainingReportForTraining($training)->getId()]
+                    );
         }
         catch (TrainingNotStartedException $ex)
         {
@@ -142,6 +146,15 @@ class TrainingModeController extends AbstractController
         }
 
         return $training;
+    }
+
+    private function getLastTrainingReportForTraining(Training $training)
+    {
+        $trainingReport = $this->getDoctrine()
+                ->getRepository(\App\Entity\TrainingReport::class)
+                ->findLastReportForTraining($training);
+
+        return $trainingReport;
     }
 
     private function getExcerciseInstance($id)

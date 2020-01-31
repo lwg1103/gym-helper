@@ -132,7 +132,9 @@ class TrainingModeControllerTest extends BaseController
         $this->finishTraining();
         $this->followRedirect();
         //see training report
+        $this->seeTrainingReport();
         //navigate to training mode index
+        $this->onTrainingModeIndex();
         $this->seeNoContinueButton();
     }
 
@@ -219,6 +221,11 @@ class TrainingModeControllerTest extends BaseController
     private function finishTraining()
     {
         $this->clickFirstLinkWithClass(".gh-finish-training");
+    }
+    
+    private function seeTrainingReport()
+    {
+        $this->assertCountElementsByClass(1, ".gh-training-report-header");
     }
 
 }
