@@ -5,6 +5,8 @@ during the training.
 work in progress!
 
 ## changelog
+### 0.7.0
+training report after finished training
 ### 0.6.0
 interactive training mode
 ### 0.5.0
