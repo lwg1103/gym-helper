@@ -40,26 +40,39 @@ class ReportGenerator implements IReportGenerator
             $key = $excerciseInstance->getName();
             if (!isset($excerciseReports[$key]))
             {
-                $excerciseReports[$key] = new ExcerciseReport();
-                $excerciseReports[$key]->setName($key)
-                        ->setSeries(1)
-                        ->setWeight($excerciseInstance->getWeight())
-                        ->setResult($excerciseInstance->getResult())
-                        ->setBaseExcercise($excerciseInstance->getBaseExcercise());
+                $excerciseReports[$key] = $this->createNewExcerciseReport($excerciseInstance);
             }
             else
             {
-                $excerciseReports[$key]->setSeries($excerciseReports[$key]->getSeries() + 1);
-
-                $currentResult = $excerciseReports[$key]->getResult();
-                $newResult     = $excerciseInstance->getResult();
-                $finalResult   = $currentResult < $newResult ? $newResult : $currentResult;
-
-                $excerciseReports[$key]->setResult($finalResult);
+                $this->updateExcerciseReport($excerciseReports[$key], $excerciseInstance);
             }
         }
 
         return $excerciseReports;
+    }
+
+    private function createNewExcerciseReport($excerciseInstance)
+    {
+        $report = new ExcerciseReport();
+
+        $report->setName($excerciseInstance->getName())
+                ->setSeries(1)
+                ->setWeight($excerciseInstance->getWeight())
+                ->setResult($excerciseInstance->getResult())
+                ->setBaseExcercise($excerciseInstance->getBaseExcercise());
+
+        return $report;
+    }
+
+    private function updateExcerciseReport($excerciseReport, $excerciseInstance)
+    {
+        $excerciseReport->setSeries($excerciseReport->getSeries() + 1);
+
+        $currentResult = $excerciseReport->getResult();
+        $newResult     = $excerciseInstance->getResult();
+        $finalResult   = $currentResult < $newResult ? $newResult : $currentResult;
+
+        $excerciseReport->setResult($finalResult);
     }
 
 }
