@@ -22,7 +22,7 @@ class ExcerciseInstanceResult
                 return "Easy";
             case self::Ok:
                 return "Ok";
-            case self::Todo:
+            case self::TooHard:
                 return "Hard";
         }
     }
