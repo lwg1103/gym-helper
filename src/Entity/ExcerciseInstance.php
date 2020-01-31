@@ -47,6 +47,12 @@ class ExcerciseInstance
      */
     private $trainingInstance;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Excercise")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $baseExcercise;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +126,18 @@ class ExcerciseInstance
     public function setTrainingInstance(?TrainingInstance $trainingInstance): self
     {
         $this->trainingInstance = $trainingInstance;
+
+        return $this;
+    }
+
+    public function getBaseExcercise(): ?Excercise
+    {
+        return $this->baseExcercise;
+    }
+
+    public function setBaseExcercise(?Excercise $baseExcercise): self
+    {
+        $this->baseExcercise = $baseExcercise;
 
         return $this;
     }

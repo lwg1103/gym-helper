@@ -111,6 +111,32 @@ class TrainingModeControllerTest extends BaseController
         $this->followRedirect();
         $this->seeNExcercises(6);
     }
+    
+    public function testFinishTraining()
+    {
+        //start training and mark three excercise as done
+        $this->onTrainingModeIndex();
+        $this->enterFirstTraining();
+        $this->followRedirect();
+        $this->seeNExcercises(6);
+        $this->markFirstExcerciseAsOk();
+        $this->followRedirect();
+        $this->seeNExcercises(6 - 1); 
+        $this->markFirstExcerciseAsEasy();
+        $this->followRedirect();
+        $this->seeNExcercises(6 - 2); 
+        $this->markFirstExcerciseAsHard();
+        $this->followRedirect();
+        $this->seeNExcercises(6 - 3); 
+        
+        $this->finishTraining();
+        $this->followRedirect();
+        //see training report
+        $this->seeTrainingReport();
+        //navigate to training mode index
+        $this->onTrainingModeIndex();
+        $this->seeNoContinueButton();
+    }
 
     private function seeAllTrainingsOnList()
     {
@@ -190,6 +216,16 @@ class TrainingModeControllerTest extends BaseController
     private function getStartTrainingLink()
     {
         return $this->crawler->filter(".gh-start-training-button")->eq(0)->link();
+    }
+    
+    private function finishTraining()
+    {
+        $this->clickFirstLinkWithClass(".gh-finish-training");
+    }
+    
+    private function seeTrainingReport()
+    {
+        $this->assertCountElementsByClass(1, ".gh-training-report-header");
     }
 
 }

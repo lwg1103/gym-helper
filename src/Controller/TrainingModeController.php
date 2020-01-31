@@ -6,12 +6,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Training;
 use App\Entity\ExcerciseInstance;
-use App\Model\ExcerciseInstanceResult;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Service\TrainingManager\ITrainingInstanceManager;
+use App\Service\TrainingManager\IExcerciseInstanceManager;
 use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
 use App\Service\TrainingManager\Exception\TrainingNotStartedException;
-use App\Service\TrainingManager\DoctrineExcerciseInstanceManager;
 
 /**
  * @Route("/training-mode", name="training_mode_")
@@ -82,11 +81,32 @@ class TrainingModeController extends AbstractController
             throw new HttpException(400, 'The training is not started');
         }
     }
+
+    /**
+     * @Route("/{id}/finish", name="finish")
+     */
+    public function finish(int $id, ITrainingInstanceManager $trainingInstanceManager)
+    {
+        try
+        {
+            $training = $this->getTraining($id);
+            $trainingInstanceManager->finishTraining($training);
+
+            return $this->redirectToRoute(
+                    "training_report_show", 
+                    ['id' => $this->getLastTrainingReportForTraining($training)->getId()]
+                    );
+        }
+        catch (TrainingNotStartedException $ex)
+        {
+            throw new HttpException(400, 'The training is not started');
+        }
+    }
     
     /**
      * @Route("/excercise/{id}/ok", name="ok_excercise")
      */
-    public function setExcerciseOk(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
+    public function setExcerciseOk(int $id, IExcerciseInstanceManager $excerciseManager)
     {
         $excerciseInstance = $this->getExcerciseInstance($id);
         $excerciseManager->markAsOk($excerciseInstance);        
@@ -97,7 +117,7 @@ class TrainingModeController extends AbstractController
     /**
      * @Route("/excercise/{id}/easy", name="easy_excercise")
      */
-    public function setExcerciseEasy(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
+    public function setExcerciseEasy(int $id, IExcerciseInstanceManager $excerciseManager)
     {
         $excerciseInstance = $this->getExcerciseInstance($id);
         $excerciseManager->markAsTooEasy($excerciseInstance);        
@@ -108,7 +128,7 @@ class TrainingModeController extends AbstractController
     /**
      * @Route("/excercise/{id}/hard", name="hard_excercise")
      */
-    public function setExcerciseHard(int $id, DoctrineExcerciseInstanceManager $excerciseManager)
+    public function setExcerciseHard(int $id, IExcerciseInstanceManager $excerciseManager)
     {
         $excerciseInstance = $this->getExcerciseInstance($id);
         $excerciseManager->markAsTooHard($excerciseInstance);        
@@ -126,6 +146,15 @@ class TrainingModeController extends AbstractController
         }
 
         return $training;
+    }
+
+    private function getLastTrainingReportForTraining(Training $training)
+    {
+        $trainingReport = $this->getDoctrine()
+                ->getRepository(\App\Entity\TrainingReport::class)
+                ->findLastReportForTraining($training);
+
+        return $trainingReport;
     }
 
     private function getExcerciseInstance($id)

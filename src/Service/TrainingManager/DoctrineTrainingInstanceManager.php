@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Service\InstanceGenerator\TrainingInstanceGenerator;
 use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
 use App\Service\TrainingManager\Exception\TrainingNotStartedException;
+use App\Service\TrainingReport\ReportGenerator;
 
 class DoctrineTrainingInstanceManager implements ITrainingInstanceManager
 {
@@ -17,15 +18,20 @@ class DoctrineTrainingInstanceManager implements ITrainingInstanceManager
     /**
      * @var TrainingInstanceGenerator
      */
-    private $generator;
+    private $trainingGenerator;
+    /**
+     * @var ReportGenerator 
+     */
+    private $reportGenerator;
 
-    public function __construct(EntityManagerInterface $entityManager, TrainingInstanceGenerator $generator)
+    public function __construct(EntityManagerInterface $entityManager, TrainingInstanceGenerator $trainingGenerator, ReportGenerator $reportGenerator)
     {
-        $this->entityManager = $entityManager;
-        $this->generator     = $generator;
+        $this->entityManager     = $entityManager;
+        $this->trainingGenerator = $trainingGenerator;
+        $this->reportGenerator   = $reportGenerator;
     }
 
-    public function finishTraining(Training $training)
+    public function finishTraining(Training $training, bool $withReport = true)
     {
         $trainingInstance = $training->getTrainingInstance();
 
@@ -34,6 +40,12 @@ class DoctrineTrainingInstanceManager implements ITrainingInstanceManager
             throw new TrainingNotStartedException();
         }
 
+        if ($withReport)
+        {
+            $report = $this->reportGenerator->generate($trainingInstance);
+            $this->entityManager->persist($report);
+        }
+        
         $this->entityManager->remove($trainingInstance);
         $this->entityManager->flush();
 
@@ -42,7 +54,7 @@ class DoctrineTrainingInstanceManager implements ITrainingInstanceManager
 
     public function restartTraining(Training $training)
     {
-        $this->finishTraining($training);
+        $this->finishTraining($training, false);
         $this->startTraining($training);
     }
 
@@ -53,7 +65,7 @@ class DoctrineTrainingInstanceManager implements ITrainingInstanceManager
             throw new TrainingAlreadyStartedException();
         }
 
-        $trainingInstance = $this->generator->generate($training);
+        $trainingInstance = $this->trainingGenerator->generate($training);
 
         $this->entityManager->persist($trainingInstance);
         $this->entityManager->flush();
