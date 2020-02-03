@@ -7,18 +7,21 @@ class TrainingModeControllerTest extends BaseController
 
     public function testSeeTrainingPage()
     {
+        $this->asAUser();
         $this->onTrainingModeIndex();
         $this->pageReturnsCode200();
     }
 
     public function testSeeTrainigsList()
     {
+        $this->asAUser();
         $this->onTrainingModeIndex();
         $this->seeAllTrainingsOnList();
     }
 
     public function testSeeTrainigDetails()
     {
+        $this->asAUser();
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
         $this->followRedirect();
@@ -27,6 +30,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testRemoveDoneExcercise()
     {
+        $this->asAUser();
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
         $this->followRedirect();
@@ -38,6 +42,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testRemoveEasyExcercise()
     {
+        $this->asAUser();
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
         $this->followRedirect();
@@ -49,6 +54,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testRemoveHardExcercise()
     {
+        $this->asAUser();
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
         $this->followRedirect();
@@ -60,6 +66,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testSeeContinueButtonIfTreningWasStarted()
     {
+        $this->asAUser();
         $this->onTrainingModeIndex();
         $this->seeNoContinueButton();
         $this->enterFirstTraining();
@@ -69,24 +76,28 @@ class TrainingModeControllerTest extends BaseController
 
     public function testThrows404IfDoneExcerciseDoesNotExists()
     {
+        $this->asAUser();
         $this->markExcerciseWithIdAsOk("99999");
         $this->pageReturnsNotFoundCode();
     }
 
     public function testThrows404IfRestartedTrainingDoesNotExists()
     {
+        $this->asAUser();
         $this->restartTrainingWithId("99999");
         $this->pageReturnsNotFoundCode();
     }
 
     public function testThrows404IfRequestedTrainingDoesNotExists()
     {
+        $this->asAUser();
         $this->seeTrainingWithId("99999");
         $this->pageReturnsNotFoundCode();
     }
     
     public function testThrows400IfTryToStartStartedTraining()
     {
+        $this->asAUser();
         $this->onTrainingModeIndex();
         $startLink = $this->getStartTrainingLink();
         $this->clickLink($startLink);
@@ -96,6 +107,7 @@ class TrainingModeControllerTest extends BaseController
     
     public function testRestartButtonCreatesNewTrainingSoISeeDoneExcercisesAgain()
     {
+        $this->asAUser();
         //start training and mark one excercise as done
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
@@ -114,6 +126,7 @@ class TrainingModeControllerTest extends BaseController
     
     public function testFinishTraining()
     {
+        $this->asAUser();
         //start training and mark three excercise as done
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();

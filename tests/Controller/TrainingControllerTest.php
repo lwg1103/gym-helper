@@ -6,24 +6,28 @@ class TrainingControllerTest extends BaseController
 {
     public function testSeeTrainingPage()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->pageReturnsCode200();
     }   
     
     public function testSeeTrainigsList()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->seeTrainingListDetails();
     }
     
     public function testSeeExcerciseDetails()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->seeExcerciseDetails();
     }
     
     public function testAddTraining()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->seeNTrainingsListed(3);      
         $this->clickFirstLinkWithClass(".gh-add-training-button");
@@ -34,6 +38,7 @@ class TrainingControllerTest extends BaseController
     
     public function testDeleteTraining()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->seeNTrainingsListed(3);  
         $this->clickFirstLinkWithClass(".gh-delete-training-button");
@@ -44,6 +49,7 @@ class TrainingControllerTest extends BaseController
     
     public function testEditTraining()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->trainingNameOnPositionIs("Day 1", 0);
         $this->clickFirstLinkWithClass(".gh-edit-training-button");
@@ -54,6 +60,7 @@ class TrainingControllerTest extends BaseController
     
     public function testThrows404IfEditedTrainingDoesNotExists()
     {
+        $this->asAUser();
         $this->getPageWithUrl("/training/99999/edit");
         $this->pageReturnsNotFoundCode();
     }

@@ -7,6 +7,7 @@ class TrainingReportControllerTest extends BaseController
 
     public function testShowReport()
     {
+        $this->asAUser();
         $this->enterTrainingReportPage();
         $this->seeTrainingReportHeader();
         $this->seeTrainingName("training 1");
@@ -16,6 +17,7 @@ class TrainingReportControllerTest extends BaseController
     
     public function testNavigateToTrainingMode()
     {
+        $this->asAUser();
         $this->enterTrainingReportPage();
         $this->clickBackutton();
         $this->seeAllTrainingsOnList();
@@ -23,6 +25,7 @@ class TrainingReportControllerTest extends BaseController
 
     public function testThrows404IfRequestedTrainingDoesNotExists()
     {
+        $this->asAUser();
         $this->seeTrainingReportWithId("99999");
         $this->pageReturnsNotFoundCode();
     }
@@ -34,7 +37,6 @@ class TrainingReportControllerTest extends BaseController
 
     private function enterTrainingReportPage()
     {
-        $this->client   = static::createClient();
         $trainingReport = $this->client
                         ->getContainer()
                         ->get('doctrine')

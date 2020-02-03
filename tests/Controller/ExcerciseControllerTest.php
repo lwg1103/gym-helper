@@ -7,6 +7,7 @@ class ExcerciseControllerTest extends BaseController
 
     public function testAddExcercise()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->seeNExcercisesListed(6);
         $this->clickFirstLinkWithClass(".gh-add-excercise-button");
@@ -17,6 +18,7 @@ class ExcerciseControllerTest extends BaseController
 
     public function testDeleteExcercise()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->seeNExcercisesListed(6);
         $this->clickFirstLinkWithClass(".gh-delete-excercise-button");
@@ -27,6 +29,7 @@ class ExcerciseControllerTest extends BaseController
     
     public function testEditExcercise()
     {
+        $this->asAUser();
         $this->onTrainingIndex();
         $this->excerciseNameOnPositionIs("exc1", 0);
         $this->clickFirstLinkWithClass(".gh-edit-excercise-button");
@@ -37,6 +40,7 @@ class ExcerciseControllerTest extends BaseController
     
     public function testThrows404IfEditedExcerciseDoesNotExists()
     {
+        $this->asAUser();
         $this->getPageWithUrl("/excercise/99999/edit");
         $this->pageReturnsNotFoundCode();
     }

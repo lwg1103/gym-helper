@@ -5,6 +5,8 @@ namespace App\Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\BrowserKit\Cookie;
 
 class BaseController extends WebTestCase
 {
@@ -16,6 +18,26 @@ class BaseController extends WebTestCase
      * @var Crawler
      */
     protected $crawler;
+    
+    protected function asAUser()
+    {
+        $this->createClientOnce();
+        
+        $session = $this->client->getContainer()->get('session');
+
+        $firewallName = 'main';
+        $firewallContext = 'main';
+
+        // you may need to use a different token class depending on your application.
+        // for example, when using Guard authentication you must instantiate PostAuthenticationGuardToken
+        $token = new UsernamePasswordToken('user@ex.com', null, $firewallName, ['ROLE_USER']);
+        //$token = new PostAuthenticationGuardToken('user@ex.com', $firewallName, ['ROLE_USER']);
+        $session->set('_security_'.$firewallContext, serialize($token));
+        $session->save();
+
+        $cookie = new Cookie($session->getName(), $session->getId());
+        $this->client->getCookieJar()->set($cookie);
+    }
 
     protected function pageReturnsCode200()
     {
@@ -44,19 +66,14 @@ class BaseController extends WebTestCase
 
     protected function getPageWithUrl($url)
     {
-        $this->client = static::createClient();
+        $this->createClientOnce();
 
         $this->crawler = $this->client->request('GET', $url);
     }
 
     protected function onTrainingModeIndex()
     {
-        if (!$this->client)
-        {
-            $this->client = static::createClient();
-        }
-
-        $this->crawler = $this->client->request('GET', '/training-mode/');
+        $this->getPageWithUrl('/training-mode/');
     }
 
     protected function clickFirstLinkWithClass($class)
@@ -75,6 +92,19 @@ class BaseController extends WebTestCase
     {
         $this->assertEquals($expectedNumber, $this->crawler->filter($class)
                         ->count());
+    }
+    
+    protected function currentUrlIs($url)
+    {
+        $this->assertStringEndsWith($url, $this->client->getHistory()->current()->getUri());
+    }
+    
+    private function createClientOnce()
+    {
+        if (!$this->client)
+        {
+            $this->client = static::createClient();
+        }
     }
 
 }
