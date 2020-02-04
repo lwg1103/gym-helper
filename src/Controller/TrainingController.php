@@ -19,11 +19,10 @@ class TrainingController extends AbstractController
      */
     public function index()
     {
-        $trainings = $this->getDoctrine()->getRepository(Training::class)->findAll();
         return $this->render(
                         'training/index.twig',
                         [
-                            'trainings' => $trainings
+                            'trainings' => $this->getUser()->getTrainings()
                         ]
         );
     }
@@ -40,6 +39,7 @@ class TrainingController extends AbstractController
         if ($form->isSubmitted() && $form->isValid())
         {
             $training = $form->getData();
+            $training->setUser($this->getUser());
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($training);

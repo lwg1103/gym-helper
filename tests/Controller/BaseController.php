@@ -30,13 +30,29 @@ class BaseController extends WebTestCase
 
         // you may need to use a different token class depending on your application.
         // for example, when using Guard authentication you must instantiate PostAuthenticationGuardToken
-        $token = new UsernamePasswordToken('user@ex.com', null, $firewallName, ['ROLE_USER']);
+        $token = new UsernamePasswordToken('user@ex.com', "pass", $firewallName, ['ROLE_USER']);
         //$token = new PostAuthenticationGuardToken('user@ex.com', $firewallName, ['ROLE_USER']);
         $session->set('_security_'.$firewallContext, serialize($token));
         $session->save();
 
         $cookie = new Cookie($session->getName(), $session->getId());
         $this->client->getCookieJar()->set($cookie);
+    }
+    
+    protected function loginAsUser($username = "user@ex.com", $password = "pass")
+    {
+        $this->getPageWithUrl('/login');
+        $this->fillLoginForm($username, $password);
+    }
+    
+    protected function fillLoginForm($email, $password)
+    {
+        $this->client->submitForm("Sign in",[
+            'email' => $email,
+            'password' => $password,
+        ]);
+        
+        $this->crawler = $this->client->followRedirect();
     }
 
     protected function pageReturnsCode200()

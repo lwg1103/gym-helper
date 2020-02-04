@@ -30,16 +30,6 @@ class SecurityControllerTest extends BaseController
         $this->currentUrlIs("/login");
     }
     
-    private function fillLoginForm($email, $password)
-    {
-        $this->client->submitForm("Sign in",[
-            'email' => $email,
-            'password' => $password,
-        ]);
-        
-        $this->crawler = $this->client->followRedirect();
-    }
-    
     private function seeHomePageMenu()
     {
         $this->assertCountElementsByClass(1, ".gh-training-mode-button");

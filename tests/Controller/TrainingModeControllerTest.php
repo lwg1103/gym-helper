@@ -7,21 +7,21 @@ class TrainingModeControllerTest extends BaseController
 
     public function testSeeTrainingPage()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->onTrainingModeIndex();
         $this->pageReturnsCode200();
     }
 
     public function testSeeTrainigsList()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->onTrainingModeIndex();
         $this->seeAllTrainingsOnList();
     }
 
     public function testSeeTrainigDetails()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
         $this->followRedirect();
@@ -30,7 +30,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testRemoveDoneExcercise()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
         $this->followRedirect();
@@ -42,7 +42,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testRemoveEasyExcercise()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
         $this->followRedirect();
@@ -54,7 +54,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testRemoveHardExcercise()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
         $this->followRedirect();
@@ -66,7 +66,7 @@ class TrainingModeControllerTest extends BaseController
 
     public function testSeeContinueButtonIfTreningWasStarted()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->onTrainingModeIndex();
         $this->seeNoContinueButton();
         $this->enterFirstTraining();
@@ -97,7 +97,7 @@ class TrainingModeControllerTest extends BaseController
     
     public function testThrows400IfTryToStartStartedTraining()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->onTrainingModeIndex();
         $startLink = $this->getStartTrainingLink();
         $this->clickLink($startLink);
@@ -107,7 +107,7 @@ class TrainingModeControllerTest extends BaseController
     
     public function testRestartButtonCreatesNewTrainingSoISeeDoneExcercisesAgain()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         //start training and mark one excercise as done
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();
@@ -126,7 +126,7 @@ class TrainingModeControllerTest extends BaseController
     
     public function testFinishTraining()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         //start training and mark three excercise as done
         $this->onTrainingModeIndex();
         $this->enterFirstTraining();

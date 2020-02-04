@@ -23,12 +23,10 @@ class TrainingModeController extends AbstractController
      */
     public function index()
     {
-        $trainings = $this->getDoctrine()->getRepository(Training::class)->findAll();
-
         return $this->render(
                         'training-mode/index.twig',
                         [
-                            'trainings' => $trainings
+                            'trainings' => $this->getUser()->getTrainings()
                         ]
         );
     }

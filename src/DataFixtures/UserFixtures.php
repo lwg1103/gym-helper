@@ -18,13 +18,19 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
+        $manager->persist($this->createDummyUser("user@ex.com"));
+        $manager->persist($this->createDummyUser("user2@ex.com"));
+        $manager->flush();
+    }
+    
+    private function createDummyUser($email)
+    {
         $user = new User();
 
-        $user->setEmail("user@ex.com")
+        $user->setEmail($email)
                 ->setPassword($this->passwordEncoder->encodePassword($user, "pass"));
-
-        $manager->persist($user);
-        $manager->flush();
+        
+        return $user;
     }
 
 }

@@ -17,7 +17,7 @@ class TrainingReportControllerTest extends BaseController
     
     public function testNavigateToTrainingMode()
     {
-        $this->asAUser();
+        $this->loginAsUser();
         $this->enterTrainingReportPage();
         $this->clickBackutton();
         $this->seeAllTrainingsOnList();
