@@ -65,6 +65,20 @@ class TrainingControllerTest extends BaseController
         $this->pageReturnsNotFoundCode();
     }
     
+    public function testAccessDeniedWhenEditingOtherUserTraining()
+    {
+        $this->loginAsUser();
+        $this->getPageWithUrl("/training/{$this->getOtherUserTrainingId()}/edit");
+        $this->pageReturnsAccessDeniedCode();
+    }
+    
+    public function testAccessDeniedWhenDeletingOtherUserTraining()
+    {
+        $this->loginAsUser();
+        $this->getPageWithUrl("/training/{$this->getOtherUserTrainingId()}/delete");
+        $this->pageReturnsAccessDeniedCode();
+    }
+    
     private function fillTrainingForm($trainingName)
     {
         $this->client->submitForm("Save",[
@@ -102,5 +116,18 @@ class TrainingControllerTest extends BaseController
     {
         $this->assertEquals($name, $this->crawler->filter("h2.gh-training-name")
                 ->eq($position)->text());
+    }
+
+    private function getOtherUserTrainingId()
+    {
+        $doctrine = $this->client
+                ->getContainer()
+                ->get('doctrine');
+
+        $otherUser = $doctrine->getRepository(\App\Entity\User::class)
+                ->findOneBy(["email" => "user2@ex.com"]);
+
+        return $doctrine->getRepository(\App\Entity\Training::class)
+                ->findOneBy(["user" => $otherUser])->getId();
     }
 }

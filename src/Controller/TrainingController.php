@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Training;
+use App\Security\TrainingVoter;
 use App\Form\TrainingType;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -62,6 +63,8 @@ class TrainingController extends AbstractController
     public function delete(int $id)
     {
         $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
+        
+        $this->denyAccessUnlessGranted(TrainingVoter::EDIT, $training);
 
         if ($training)
         {
@@ -84,6 +87,8 @@ class TrainingController extends AbstractController
         {
             throw $this->createNotFoundException('The training does not exist');
         }
+        
+        $this->denyAccessUnlessGranted(TrainingVoter::EDIT, $training);
 
         $form = $this->createForm(TrainingType::class, $training);
 

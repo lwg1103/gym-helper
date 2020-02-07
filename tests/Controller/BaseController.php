@@ -65,6 +65,11 @@ class BaseController extends WebTestCase
         $this->pageReturnsCodeN(404);
     }
 
+    protected function pageReturnsAccessDeniedCode()
+    {
+        $this->pageReturnsCodeN(403);
+    }
+
     protected function pageReturnsCodeN($n)
     {
         $this->assertEquals($n, $this->client->getResponse()->getStatusCode());
