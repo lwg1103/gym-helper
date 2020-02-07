@@ -106,10 +106,7 @@ class TrainingModeController extends AbstractController
      */
     public function setExcerciseOk(int $id, IExcerciseInstanceManager $excerciseManager)
     {
-        $excerciseInstance = $this->getExcerciseInstance($id);
-        $excerciseManager->markAsOk($excerciseInstance);        
-        
-        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+        return $this->setExcerciseStatus($excerciseManager, $id, "markAsOk");
     }
     
     /**
@@ -117,10 +114,7 @@ class TrainingModeController extends AbstractController
      */
     public function setExcerciseEasy(int $id, IExcerciseInstanceManager $excerciseManager)
     {
-        $excerciseInstance = $this->getExcerciseInstance($id);
-        $excerciseManager->markAsTooEasy($excerciseInstance);        
-        
-        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+        return $this->setExcerciseStatus($excerciseManager, $id, "markAsTooEasy");
     }
     
     /**
@@ -128,10 +122,16 @@ class TrainingModeController extends AbstractController
      */
     public function setExcerciseHard(int $id, IExcerciseInstanceManager $excerciseManager)
     {
-        $excerciseInstance = $this->getExcerciseInstance($id);
-        $excerciseManager->markAsTooHard($excerciseInstance);        
+        return $this->setExcerciseStatus($excerciseManager, $id, "markAsTooHard");
+    }
+    
+    private function setExcerciseStatus($excerciseManager, $excerciseId, $status)
+    {
+        $excerciseInstance = $this->getExcerciseInstance($excerciseId);
+        $excerciseManager->{$status}($excerciseInstance);        
         
-        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getBaseTrainingId()]);
+       
     }
 
     private function getTraining($id)

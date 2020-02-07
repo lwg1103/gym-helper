@@ -47,6 +47,11 @@ class TrainingInstance
     {
         return $this->baseTraining;
     }
+    
+    public function getBaseTrainingId(): ?int
+    {
+        return $this->baseTraining->getId();
+    }
 
     public function setBaseTraining(?Training $baseTraining): self
     {
