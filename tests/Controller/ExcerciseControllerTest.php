@@ -26,7 +26,7 @@ class ExcerciseControllerTest extends BaseController
         $this->pageReturnsCode200();
         $this->seeNExcercisesListed(5);
     }
-    
+
     public function testEditExcercise()
     {
         $this->loginAsUser();
@@ -37,12 +37,26 @@ class ExcerciseControllerTest extends BaseController
         $this->pageReturnsCode200();
         $this->excerciseNameOnPositionIs("edited exc", 0);
     }
-    
+
     public function testThrows404IfEditedExcerciseDoesNotExists()
     {
         $this->asAUser();
         $this->getPageWithUrl("/excercise/99999/edit");
         $this->pageReturnsNotFoundCode();
+    }
+
+    public function testAccessDeniedWhenEditingOtherUserExcercise()
+    {
+        $this->loginAsUser();
+        $this->getPageWithUrl("/excercise/{$this->getOtherUserExcerciseId()}/edit");
+        $this->pageReturnsAccessDeniedCode();
+    }
+
+    public function testAccessDeniedWhenDeletingOtherUserExcercise()
+    {
+        $this->loginAsUser();
+        $this->getPageWithUrl("/excercise/{$this->getOtherUserExcerciseId()}/delete");
+        $this->pageReturnsAccessDeniedCode();
     }
 
     private function fillExcerciseForm($trainingName)
@@ -69,6 +83,23 @@ class ExcerciseControllerTest extends BaseController
     {
         $this->assertEquals($name, $this->crawler->filter("td.gh-excercise-name")
                         ->eq($position)->text());
+    }
+
+    private function getOtherUserExcerciseId()
+    {
+        $doctrine = $this->client
+                ->getContainer()
+                ->get('doctrine');
+
+        $otherUser = $doctrine->getRepository(\App\Entity\User::class)
+                ->findOneBy(["email" => "user2@ex.com"]);
+
+        $training = $doctrine->getRepository(\App\Entity\Training::class)
+                ->findOneBy(["user" => $otherUser]);
+
+        return $doctrine->getRepository(\App\Entity\Excercise::class)
+                        ->findOneBy(["training" => $training])
+                        ->getId();
     }
 
 }

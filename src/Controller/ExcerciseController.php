@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Excercise;
+use App\Security\ExcerciseVoter;
 use App\Form\ExcerciseType;
 
 /**
@@ -49,6 +50,8 @@ class ExcerciseController extends AbstractController
     {
         $excercise = $this->getDoctrine()->getRepository(Excercise::class)->find($id);
 
+        $this->denyAccessUnlessGranted(ExcerciseVoter::EDIT, $excercise);
+
         if ($excercise)
         {
             $entityManager = $this->getDoctrine()->getManager();
@@ -70,6 +73,8 @@ class ExcerciseController extends AbstractController
         {
             throw $this->createNotFoundException('The excercise does not exist');
         }
+
+        $this->denyAccessUnlessGranted(ExcerciseVoter::EDIT, $excercise);
 
         $form = $this->createForm(ExcerciseType::class, $excercise);
 
