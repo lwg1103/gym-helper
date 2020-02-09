@@ -30,6 +30,11 @@ class Training
      */
     private $trainingInstance;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="trainings")
+     */
+    private $user;
+
     public function __construct()
     {
         $this->excercises = new ArrayCollection();
@@ -116,6 +121,18 @@ class Training
     public function isStarted()
     {
         return null != $this->trainingInstance;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
 }

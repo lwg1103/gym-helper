@@ -97,4 +97,9 @@ class TrainingReport
 
         return $this;
     }
+    
+    public function getOwner()
+    {
+        return $this->baseTraining->getUser();
+    }
 }
