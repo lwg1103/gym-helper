@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\TrainingReport;
+use App\Security\TrainingReportVoter;
 
 /**
  * @Route("/training-report", name="training_report_")
@@ -18,6 +19,8 @@ class TrainingReportController extends AbstractController
     public function show(int $id)
     {
         $trainingReport = $this->getTrainingReport($id);
+        
+        $this->denyAccessUnlessGranted(TrainingReportVoter::SHOW, $trainingReport);
 
         return $this->render(
                         'training-report/show.twig',
