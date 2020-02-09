@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\Training;
+use App\Security\TrainingVoter;
 use App\Form\TrainingType;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,11 +20,10 @@ class TrainingController extends AbstractController
      */
     public function index()
     {
-        $trainings = $this->getDoctrine()->getRepository(Training::class)->findAll();
         return $this->render(
                         'training/index.twig',
                         [
-                            'trainings' => $trainings
+                            'trainings' => $this->getUser()->getTrainings()
                         ]
         );
     }
@@ -40,6 +40,7 @@ class TrainingController extends AbstractController
         if ($form->isSubmitted() && $form->isValid())
         {
             $training = $form->getData();
+            $training->setUser($this->getUser());
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($training);
@@ -62,6 +63,8 @@ class TrainingController extends AbstractController
     public function delete(int $id)
     {
         $training = $this->getDoctrine()->getRepository(Training::class)->find($id);
+        
+        $this->denyAccessUnlessGranted(TrainingVoter::EDIT, $training);
 
         if ($training)
         {
@@ -84,6 +87,8 @@ class TrainingController extends AbstractController
         {
             throw $this->createNotFoundException('The training does not exist');
         }
+        
+        $this->denyAccessUnlessGranted(TrainingVoter::EDIT, $training);
 
         $form = $this->createForm(TrainingType::class, $training);
 

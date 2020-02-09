@@ -157,4 +157,9 @@ class Excercise
 
         return $this;
     }
+    
+    public function getOwner()
+    {
+        return $this->training->getUser();
+    }
 }

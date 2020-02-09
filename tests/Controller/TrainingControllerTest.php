@@ -6,24 +6,28 @@ class TrainingControllerTest extends BaseController
 {
     public function testSeeTrainingPage()
     {
+        $this->loginAsUser();
         $this->onTrainingIndex();
         $this->pageReturnsCode200();
     }   
     
     public function testSeeTrainigsList()
     {
+        $this->loginAsUser();
         $this->onTrainingIndex();
         $this->seeTrainingListDetails();
     }
     
     public function testSeeExcerciseDetails()
     {
+        $this->loginAsUser();
         $this->onTrainingIndex();
         $this->seeExcerciseDetails();
     }
     
     public function testAddTraining()
     {
+        $this->loginAsUser();
         $this->onTrainingIndex();
         $this->seeNTrainingsListed(3);      
         $this->clickFirstLinkWithClass(".gh-add-training-button");
@@ -34,6 +38,7 @@ class TrainingControllerTest extends BaseController
     
     public function testDeleteTraining()
     {
+        $this->loginAsUser();
         $this->onTrainingIndex();
         $this->seeNTrainingsListed(3);  
         $this->clickFirstLinkWithClass(".gh-delete-training-button");
@@ -44,6 +49,7 @@ class TrainingControllerTest extends BaseController
     
     public function testEditTraining()
     {
+        $this->loginAsUser();
         $this->onTrainingIndex();
         $this->trainingNameOnPositionIs("Day 1", 0);
         $this->clickFirstLinkWithClass(".gh-edit-training-button");
@@ -54,8 +60,23 @@ class TrainingControllerTest extends BaseController
     
     public function testThrows404IfEditedTrainingDoesNotExists()
     {
+        $this->asAUser();
         $this->getPageWithUrl("/training/99999/edit");
         $this->pageReturnsNotFoundCode();
+    }
+    
+    public function testAccessDeniedWhenEditingOtherUserTraining()
+    {
+        $this->loginAsUser();
+        $this->getPageWithUrl("/training/{$this->getOtherUserTrainingId()}/edit");
+        $this->pageReturnsAccessDeniedCode();
+    }
+    
+    public function testAccessDeniedWhenDeletingOtherUserTraining()
+    {
+        $this->loginAsUser();
+        $this->getPageWithUrl("/training/{$this->getOtherUserTrainingId()}/delete");
+        $this->pageReturnsAccessDeniedCode();
     }
     
     private function fillTrainingForm($trainingName)
@@ -95,5 +116,18 @@ class TrainingControllerTest extends BaseController
     {
         $this->assertEquals($name, $this->crawler->filter("h2.gh-training-name")
                 ->eq($position)->text());
+    }
+
+    private function getOtherUserTrainingId()
+    {
+        $doctrine = $this->client
+                ->getContainer()
+                ->get('doctrine');
+
+        $otherUser = $doctrine->getRepository(\App\Entity\User::class)
+                ->findOneBy(["email" => "user2@ex.com"]);
+
+        return $doctrine->getRepository(\App\Entity\Training::class)
+                ->findOneBy(["user" => $otherUser])->getId();
     }
 }

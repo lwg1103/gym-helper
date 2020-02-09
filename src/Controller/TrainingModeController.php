@@ -11,6 +11,8 @@ use App\Service\TrainingManager\ITrainingInstanceManager;
 use App\Service\TrainingManager\IExcerciseInstanceManager;
 use App\Service\TrainingManager\Exception\TrainingAlreadyStartedException;
 use App\Service\TrainingManager\Exception\TrainingNotStartedException;
+use App\Security\TrainingVoter;
+use App\Security\ExcerciseInstanceVoter;
 
 /**
  * @Route("/training-mode", name="training_mode_")
@@ -23,12 +25,10 @@ class TrainingModeController extends AbstractController
      */
     public function index()
     {
-        $trainings = $this->getDoctrine()->getRepository(Training::class)->findAll();
-
         return $this->render(
                         'training-mode/index.twig',
                         [
-                            'trainings' => $trainings
+                            'trainings' => $this->getUser()->getTrainings()
                         ]
         );
     }
@@ -38,12 +38,14 @@ class TrainingModeController extends AbstractController
      */
     public function show(int $id)
     {
-        $training = $this->getTraining($id)->getTrainingInstance();
+        $training = $this->getTraining($id);
+        
+        $this->denyAccessUnlessGranted(TrainingVoter::SHOW, $training);
 
         return $this->render(
                         'training-mode/show.twig',
                         [
-                            'training' => $training
+                            'training' => $training->getTrainingInstance()
                         ]
         );
     }
@@ -55,7 +57,9 @@ class TrainingModeController extends AbstractController
     {
         try
         {
-            $trainingInstanceManager->startTraining($this->getTraining($id));
+            $training = $this->getTraining($id);
+            $this->denyAccessUnlessGranted(TrainingVoter::EDIT, $training);
+            $trainingInstanceManager->startTraining($training);
 
             return $this->redirectToRoute("training_mode_show", ['id' => $id]);
         }
@@ -72,7 +76,9 @@ class TrainingModeController extends AbstractController
     {
         try
         {
-            $trainingInstanceManager->restartTraining($this->getTraining($id));
+            $training = $this->getTraining($id);
+            $this->denyAccessUnlessGranted(TrainingVoter::EDIT, $training);
+            $trainingInstanceManager->restartTraining($training);
 
             return $this->redirectToRoute("training_mode_show", ['id' => $id]);
         }
@@ -90,6 +96,7 @@ class TrainingModeController extends AbstractController
         try
         {
             $training = $this->getTraining($id);
+            $this->denyAccessUnlessGranted(TrainingVoter::EDIT, $training);
             $trainingInstanceManager->finishTraining($training);
 
             return $this->redirectToRoute(
@@ -108,10 +115,7 @@ class TrainingModeController extends AbstractController
      */
     public function setExcerciseOk(int $id, IExcerciseInstanceManager $excerciseManager)
     {
-        $excerciseInstance = $this->getExcerciseInstance($id);
-        $excerciseManager->markAsOk($excerciseInstance);        
-        
-        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+        return $this->setExcerciseStatus($excerciseManager, $id, "markAsOk");
     }
     
     /**
@@ -119,10 +123,7 @@ class TrainingModeController extends AbstractController
      */
     public function setExcerciseEasy(int $id, IExcerciseInstanceManager $excerciseManager)
     {
-        $excerciseInstance = $this->getExcerciseInstance($id);
-        $excerciseManager->markAsTooEasy($excerciseInstance);        
-        
-        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+        return $this->setExcerciseStatus($excerciseManager, $id, "markAsTooEasy");
     }
     
     /**
@@ -130,10 +131,17 @@ class TrainingModeController extends AbstractController
      */
     public function setExcerciseHard(int $id, IExcerciseInstanceManager $excerciseManager)
     {
-        $excerciseInstance = $this->getExcerciseInstance($id);
-        $excerciseManager->markAsTooHard($excerciseInstance);        
+        return $this->setExcerciseStatus($excerciseManager, $id, "markAsTooHard");
+    }
+    
+    private function setExcerciseStatus($excerciseManager, $excerciseId, $status)
+    {
+        $excerciseInstance = $this->getExcerciseInstance($excerciseId);
+        $this->denyAccessUnlessGranted(ExcerciseInstanceVoter::EDIT, $excerciseInstance);
+        $excerciseManager->{$status}($excerciseInstance);        
         
-        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getTrainingInstance()->getBaseTraining()->getId()]);
+        return $this->redirectToRoute("training_mode_show", ['id' => $excerciseInstance->getBaseTrainingId()]);
+       
     }
 
     private function getTraining($id)

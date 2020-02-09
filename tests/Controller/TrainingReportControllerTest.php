@@ -7,6 +7,7 @@ class TrainingReportControllerTest extends BaseController
 
     public function testShowReport()
     {
+        $this->loginAsUser();
         $this->enterTrainingReportPage();
         $this->seeTrainingReportHeader();
         $this->seeTrainingName("training 1");
@@ -16,6 +17,7 @@ class TrainingReportControllerTest extends BaseController
     
     public function testNavigateToTrainingMode()
     {
+        $this->loginAsUser();
         $this->enterTrainingReportPage();
         $this->clickBackutton();
         $this->seeAllTrainingsOnList();
@@ -23,8 +25,16 @@ class TrainingReportControllerTest extends BaseController
 
     public function testThrows404IfRequestedTrainingDoesNotExists()
     {
+        $this->asAUser();
         $this->seeTrainingReportWithId("99999");
         $this->pageReturnsNotFoundCode();
+    }
+    
+    public function testAccessDeniedWhenViewingOtherUserTrainingReport()
+    {
+        $this->loginAsUser();
+        $this->seeTrainingReportWithId($this->getOtherUserTrainingReportId());
+        $this->pageReturnsAccessDeniedCode();  
     }
 
     private function seeTrainingReportWithId($id)
@@ -34,7 +44,6 @@ class TrainingReportControllerTest extends BaseController
 
     private function enterTrainingReportPage()
     {
-        $this->client   = static::createClient();
         $trainingReport = $this->client
                         ->getContainer()
                         ->get('doctrine')
@@ -82,6 +91,23 @@ class TrainingReportControllerTest extends BaseController
         $this->assertEquals("Day 1", $this->crawler->filter("h2.gh-training-name")->eq(0)->html());
         $this->assertEquals("Day 2", $this->crawler->filter("h2.gh-training-name")->eq(1)->html());
         $this->assertEquals("Day 3", $this->crawler->filter("h2.gh-training-name")->eq(2)->html());
+    }
+    
+    private function getOtherUserTrainingReportId()
+    {
+        $doctrine = $this->client
+                ->getContainer()
+                ->get('doctrine');
+
+        $otherUser = $doctrine->getRepository(\App\Entity\User::class)
+                ->findOneBy(["email" => "user2@ex.com"]); 
+        
+        $training = $doctrine->getRepository(\App\Entity\Training::class)
+                ->findOneBy(["user" => $otherUser]);
+        
+        return $doctrine->getRepository(\App\Entity\TrainingReport::class)
+                ->findOneBy(["baseTraining" => $training])
+                ->getId();
     }
 
 }
