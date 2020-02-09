@@ -146,4 +146,9 @@ class ExcerciseInstance
     {
         return $this->trainingInstance->getBaseTrainingId();
     }
+    
+    public function getOwner()
+    {
+        return $this->baseExcercise->getOwner();
+    }
 }

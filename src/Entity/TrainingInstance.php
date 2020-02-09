@@ -90,4 +90,10 @@ class TrainingInstance
 
         return $this;
     }
+    
+    public function getOwner()
+    {
+        $this->baseTraining->getUser();
+    }
+          
 }
