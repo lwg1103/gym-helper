@@ -5,6 +5,8 @@ during the training.
 work in progress!
 
 ## changelog
+### 0.8.1
+responsivness fixed
 ### 0.8.0
 basic user authentication and security
 ### 0.7.0
