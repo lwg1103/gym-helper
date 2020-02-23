@@ -18,6 +18,12 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      */
     private $id;
+    
+
+    /**
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     */
+    private $apiToken;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
@@ -48,6 +54,18 @@ class User implements UserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+    
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+    
+    public function generateApiKey()
+    {
+        $this->apiToken = uniqid("key_");
+        
+        return $this;
     }
 
     public function getEmail(): ?string

@@ -28,7 +28,8 @@ class UserFixtures extends Fixture
         $user = new User();
 
         $user->setEmail($email)
-                ->setPassword($this->passwordEncoder->encodePassword($user, "pass"));
+                ->setPassword($this->passwordEncoder->encodePassword($user, "pass"))
+                ->generateApiKey();
         
         return $user;
     }
