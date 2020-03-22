@@ -102,6 +102,9 @@
     "doctrine/reflection": {
         "version": "v1.1.0"
     },
+    "easycorp/easy-deploy-bundle": {
+        "version": "v1.0.6"
+    },
     "easycorp/easy-log-handler": {
         "version": "1.0",
         "recipe": {
@@ -184,6 +187,18 @@
         },
         "files": [
             "config/packages/sensio_framework_extra.yaml"
+        ]
+    },
+    "symfony/apache-pack": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "410b9325a37ef86f1e47262c61738f6202202bca"
+        },
+        "files": [
+            "public/.htaccess"
         ]
     },
     "symfony/asset": {
