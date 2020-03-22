@@ -11,6 +11,7 @@ class ApiControllerTestCase extends WebTestCase
     
     public function __construct()
     {
-//        $this->client = new Client(['base_uri' => 'http://localhost:8000']);
+        $this->client = new Client(['base_uri' => 'http://localhost:8000']);
+        parent::__construct();
     }
 }
